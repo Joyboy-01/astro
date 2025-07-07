@@ -27,6 +27,7 @@
     "astro": "^5.8.1",
     "astro-pure": "1.3.0",
     "katex": "^0.16.22",
+    "recaptcha-v3": "^1.11.3",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
     "sharp": "^0.34.2",
