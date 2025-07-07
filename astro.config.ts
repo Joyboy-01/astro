@@ -25,7 +25,7 @@ import config from './src/site.config.ts'
 // https://astro.build/config
 export default defineConfig({
   // Top-Level Options
-  site: '',
+  site: 'astro-git-main-joyboy-01s-projects.vercel.app',
   // base: '/docs',
   trailingSlash: 'never',
 
