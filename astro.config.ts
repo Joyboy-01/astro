@@ -25,7 +25,7 @@ import config from './src/site.config.ts'
 // https://astro.build/config
 export default defineConfig({
   // Top-Level Options
-  site: 'https://astro-git-main-joyboy-01s-projects.vercel.app',
+  site: 'https://www.shuoer.top',
   // base: '/docs',
   trailingSlash: 'never',
 
@@ -33,7 +33,6 @@ export default defineConfig({
   // https://docs.astro.build/en/guides/deploy/
   // 1. Vercel (serverless)
   adapter: vercel(),
-  // output: 'server',
   // 2. Vercel (static)
   // adapter: vercelStatic(),
   // 3. Local (standalone)
