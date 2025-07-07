@@ -59,22 +59,22 @@ export const theme: ThemeUserConfig = {
   footer: {
     links: [
       // Registration link
-      {
-        title: 'Moe ICP 114514',
-        link: 'https://icp.gov.moe/?keyword=114514',
-        style: 'text-sm' // Uno/TW CSS class
-      },
-      {
-        title: 'Travelling',
-        link: 'https://www.travellings.cn/go.html',
-        style: 'text-sm'
-      },
-      // Privacy Policy link
-      {
-        title: '萌ICP备20251221号',  // 新添加的
-        link: 'https://icp.gov.moe/?keyword=20251221',
-        style: 'text-sm'
-      },
+      // {
+      //   title: 'Moe ICP 114514',
+      //   link: 'https://icp.gov.moe/?keyword=114514',
+      //   style: 'text-sm' // Uno/TW CSS class
+      // },
+      // {
+      //   title: 'Travelling',
+      //   link: 'https://www.travellings.cn/go.html',
+      //   style: 'text-sm'
+      // },
+      // // Privacy Policy link
+      // {
+      //   title: '萌ICP备20251221号',  // 新添加的
+      //   link: 'https://icp.gov.moe/?keyword=20251221',
+      //   style: 'text-sm'
+      // },
       {
         title: 'Site Policy',
         link: '/terms/list',
@@ -115,17 +115,20 @@ export const integ: IntegrationUserConfig = {
       { name: 'Avatar', val: 'https://astro-pure.js.org/favicon/favicon.ico' }
     ]
   },
+  
   // Enable page search function
   pagefind: true,
   // Add a random quote to the footer (default on homepage footer)
   // See: https://astro-pure.js.org/docs/integrations/advanced#web-content-render
   quote: {
     // https://developer.hitokoto.cn/sentence/#%E8%AF%B7%E6%B1%82%E5%9C%B0%E5%9D%80
+    server: 'https://v1.hitokoto.cn/?c=i', 
+    target: `(data) => data.hitokoto || 'Error'`
     // server: 'https://v1.hitokoto.cn/?c=i',
     // target: (data) => (data as { hitokoto: string }).hitokoto || 'Error'
     // https://github.com/lukePeavey/quotable
-    server: 'https://api.quotable.io/quotes/random?maxLength=60',
-    target: `(data) => data[0].content || 'Error'`
+    // server: 'https://api.quotable.io/quotes/random?maxLength=60',
+    // target: `(data) => data[0].content || 'Error'`
   },
   // UnoCSS typography
   // See: https://unocss.dev/presets/typography
