@@ -54,5 +54,60 @@ const {
         ) !important;
       }
     </style>
+    <!-- 在 </body> 之前添加这个超级强制的修复 -->
+    <script is:inline>
+    (function() {
+      function ultimateQRCodeFix() {
+        const button = document.getElementById('get-qrcode')
+        const container = document.getElementById('qrcode-container')
+        
+        if (button && container) {
+          // 完全替换按钮的点击处理
+          button.removeAttribute('onclick')
+          const events = ['click', 'mousedown', 'mouseup']
+          events.forEach(event => {
+            button.removeEventListener(event, arguments.callee)
+          })
+          
+          button.style.cursor = 'pointer'
+          button.onclick = function(e) {
+            e.preventDefault()
+            e.stopImmediatePropagation()
+            
+            const isVisible = container.style.opacity === '1'
+            
+            if (isVisible) {
+              container.style.maxHeight = '0'
+              container.style.opacity = '0'
+              container.style.transform = 'translateY(0)'
+              container.setAttribute('aria-expanded', 'false')
+            } else {
+              container.style.maxHeight = '200px'
+              container.style.opacity = '1'
+              container.style.transform = 'translateY(16px)'
+              container.setAttribute('aria-expanded', 'true')
+            }
+            
+            console.log('QRCode toggled:', !isVisible ? 'shown' : 'hidden')
+            return false
+          }
+          
+          console.log('Ultimate QRCode fix applied!')
+          return true
+        }
+        return false
+      }
+      
+      // 多次尝试修复
+      const attempts = [100, 500, 1000, 2000]
+      attempts.forEach(delay => {
+        setTimeout(ultimateQRCodeFix, delay)
+      })
+      
+      window.addEventListener('load', () => {
+        setTimeout(ultimateQRCodeFix, 100)
+      })
+    })()
+    </script>
   </body>
 </html>

@@ -113,27 +113,42 @@ const headings = [
 
   {/* about-blog */}
   <h2 id='about-blog'>About Blog</h2>
-  <p>Website history:</p>
+  <p>网站历史</p>
+
   <Timeline
     events={[
       {
-        date: '2025-07-06',
+        date: '2025-07-07',
         content:
-          'Website refactored using <a href="https://astro.build/" target="_blank">Astro</a> and <a href="https://github.com/srleom/astro-theme-resume" target="_blank">Astro Theme Resume</a>'
+          '网站使用 <a href="https://astro.build/" target="_blank">Astro</a> 和 <a href="https://github.com/srleom/astro-theme-resume" target="_blank">Astro Theme Resume</a>建立，一定程度上抄了大佬<a href="https://arthals.ink/" target="_blank">Arthals</a>的界面'
+      }
+    ]}
+  />
+  <Timeline
+    events={[
+      {
+        date: '2025-07-05',
+        content:
+          '发现了 <a href="https://arthals.ink/" target="_blank">Arthals</a> 的主页'
       }
     ]}
   />
   <p>
-    The smooth operation and personalized customization of website also rely on the resources and
-    technical support provided by the following excellent projects/service providers:
+    本站基于以下项目/服务提供商的资源和技术支持
   </p>
   <ul>
     <!-- <li>Domain: <a href='#' target='_blank'>Vercel</a></li> -->
     <li>
-      Framework & Theme: <a href='https://astro.build/' target='_blank'>Astro</a> + <a
+      域名: <a href='https://cloud.tencent.com/act/pro/warmup202506?fromSource=gwzcw.9884755.9884755.9884755&utm_medium=cpc&utm_id=gwzcw.9884755.9884755.9884755&msclkid=d989c04d2c8e18a863fea821ef74b2fd#LH' target='_blank'>腾讯云</a> 
+    </li>
+    <li>
+      框架 & 主题: <a href='https://astro.build/' target='_blank'>Astro</a> + <a
         href='https://github.com/cworld1/astro-theme-pure'
         target='_blank'>Astro Theme Pure</a
       >
+    </li>
+    <li>
+      评论系统: <a href='https://astro.build/' target='_blank'>waline</a> 
     </li>
    
   </ul>

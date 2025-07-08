@@ -31,7 +31,7 @@ export const theme: ThemeUserConfig = {
   // === Global configuration ===
   titleDelimiter: '•',
   prerender: true,
-  npmCDN: 'https://cdn.jsdelivr.net/npm',
+  npmCDN: 'https://unpkg.com',
 
   // Still in test
   head: [
@@ -49,7 +49,7 @@ export const theme: ThemeUserConfig = {
     menu: [
       { title: 'Blog', link: '/blog' },
       // { title: 'Docs', link: '/docs' },
-      // { title: 'Projects', link: '/projects' },
+      { title: 'Projects', link: '/projects' },
       { title: 'Links', link: '/links' },
       { title: 'About', link: '/about' }
     ]
@@ -93,7 +93,7 @@ export const theme: ThemeUserConfig = {
     blogPageSize: 8,
     externalLinkArrow: true, // show external link arrow
     // Currently support weibo, x, bluesky
-    share: ['weibo', 'x', 'bluesky']
+    share: ['weibo']//, 'x', 'bluesky'
   }
 }
 
@@ -111,8 +111,8 @@ export const integ: IntegrationUserConfig = {
     applyTip: [
       { name: 'Name', val: theme.title },
       { name: 'Desc', val: theme.description || 'Null' },
-      { name: 'Link', val: 'https://astro-pure.js.org/' },
-      { name: 'Avatar', val: 'https://astro-pure.js.org/favicon/favicon.ico' }
+      { name: 'Link', val: 'https://shuoer.top/' },
+      { name: 'Avatar', val: 'https://shuoer.top/favicon/favicon.ico' }
     ]
   },
   
