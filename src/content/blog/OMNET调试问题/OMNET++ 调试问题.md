@@ -45,3 +45,4 @@ omnetpp-6.2.0:~/omnetpp_ws/tictoc$ gdb --args ./tictoc_dbg -u Qtenv -n . omnetpp
 ```
 
 ![命令行运行](./pic/Pasted%20image%2020251104143347.png)
+
