@@ -33,10 +33,14 @@
 
 /* Katex */
 span.katex-display {
-  overflow-y: scroll;
+  display: block;        /* 加这行 */
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-align: center;
   padding: 0.5rem;
+  margin: 1em auto;
 }
-.katex-html {
+/* .katex-html {
   overflow: auto hidden;
   padding: 3px;
 }
@@ -48,7 +52,7 @@ span.katex-display {
   position: relative !important;
   display: inline-block;
   padding-inline-start: 0.5rem;
-}
+} */
 
 /* Shiki */
 .astro-code {

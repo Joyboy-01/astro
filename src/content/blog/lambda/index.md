@@ -51,7 +51,7 @@ $$
 对于推断：
 
 $$
-\text{isZero ONE} = \lambda n.(n\,(\lambda a.\text{FALSE})\,\text{TRUE})\,(\lambda f.\lambda x.(f\,x))
+\text{isZero ONE}= \lambda n.(n\,(\lambda a.\text{FALSE})\,\text{TRUE})\,(\lambda f.\lambda x.(f\,x))
 $$
 
 代入后可以发现f这个变量对应的是$\lambda n.(n\,(\lambda a.\text{FALSE})\,\text{TRUE})$，所以只要f存在，就是假，这对于church数来说是正确的。
