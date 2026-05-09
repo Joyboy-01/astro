@@ -7,6 +7,7 @@ tags:
 language: '中文'
 ---
 ## Background
+
 Why Diffusion Models Don't Memorize: The Role of Implicit Dynamical Regularization in Training (NeurIPS25)
 
 这篇文章揭示并证明了diffusion model的学习过程是先泛化，后记忆，且给出了数学的证明以及量化。
@@ -119,7 +120,6 @@ $$
 
 Vincent 证明了最小化 $\mathbb{E}_{x_0, \epsilon}\|s_\theta(x_\tau, \tau) - \nabla_{x_\tau} \log P(x_\tau | x_0)\|^2$和最小化 $\mathbb{E}_{x_\tau}\|s_\theta(x_\tau, \tau) - \nabla_{x_\tau} \log P_\tau(x_\tau)\|^2$有相同的最优解：
 
-
 $$
 \nabla_{x_t} \log P_t(x_t) = \frac{\nabla_{x_t} P_t(x_t)}{P_t(x_t)}
 $$
@@ -197,9 +197,10 @@ $$
 
 因此两者关于 $\theta$ 的梯度相同，最优解一致。
 
-
 ## Experiemnt
+
 论文用一系列实验从不同角度消除了可能存在的疑问。
+
 ### 主实验
 
 主实验在 CelebA 数据集上训练 U-Net，改变训练集大小，观察 FID 和 $f_{\text{mem}}$ 随训练时间 $\tau$ 的演化（论文 Figure 2 左面板）。
@@ -430,7 +431,9 @@ $\rho_1$ 来自 $U$ 分解中的第一项 $G G^T / n$。$G$ 是一个 $p \times 
 3. $\rho_2$：另一个分布在尺度 $\psi_p$ 的连续谱。它和数据无关（只依赖 $\Sigma$），尺度远大于 $\rho_1$。
 
 ### 总结
+
 现在回看整个逻辑：
+
 1. 设置：RFNN 是两层网络，只训第二层。训练损失是参数 $A$ 的二次函数。
 2. 动力学解：梯度下降的闭式解表明时间尺度由矩阵 $U$ 的特征值决定。
 3. GEP 简化：高斯等价原理把非线性 $U$ 等价为线性高斯矩阵，使随机矩阵理论可以应用。
@@ -441,7 +444,10 @@ $\rho_1$ 来自 $U$ 分解中的第一项 $G G^T / n$。$G$ 是一个 $p \times 
 8. 额外发现：得分误差在泛化窗口内按 $\psi_n^{-\eta}$ 幂律衰减。
 $U$ 的谱分裂到两个尺度比为 $n/d$ 的 bulk。这一件事推出所有其他结论——两个时间尺度的存在、各自的 $n$-依赖性、泛化窗口的存在、窗口长度 $\propto n$。
 
-## Thinking 
+## Thinking
+
 Early stopping 不是技巧而是必需。在监督学习里 early stopping 是"防止过拟合的可选技巧"。在扩散模型里它是绕开损失函数本身坏性质的必需手段。
 
 这个结论不能推广到语言模型。语言模型（LLM）也会记忆训练数据，但机制不同：扩散模型的损失函数最优解本身就是记忆解——这是数学必然。而 LLM 训练的是下一 token 预测，全局最优是真实条件概率 $P(x_{t+1} | x_1, ..., x_t)$——这是一个泛化的目标，不是记忆。LLM 的记忆主要来自训练数据的重复——出现多次的序列被记住。所以 LLM 的记忆防护策略是数据去重、差分隐私训练等，和本文的 early stopping 策略不同。本文的 $\tau_{\text{mem}} \propto n$ 标度律和 $(n, p)$ 相图只对扩散模型成立。
+
+另一方面，该研究基于标准的像素级 U-Net 扩散模型展开，而目前的绝对技术主流已经转向了潜在扩散模型（Latent Diffusion Models, LDMs，如Stable Diffusion）。在LDMs中，扩散动力学并不是在三维像素空间中演化，而是在由强大的变分自编码器（VAE）高度压缩并正则化后的低维潜空间中进行。这种潜空间的固有频率偏置（Frequency-dependent learning bias）和流形维度将发生剧烈畸变。在这个被正则化过的低维空间中，$\tau_{gen}$ 是否还能保持完美的常数不变？这是学术界和基础模型开发者在将这一理论转化为工业级调参守则时，必须立刻展开验证的致命盲区。
