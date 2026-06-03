@@ -17,34 +17,31 @@ const headings = [
 ---
 
 <PageLayout title='Projects' {headings} info={{ slug: '/projects', hideComment: true }}>
-  <p>
-    网站刚刚建立，这里还空空如也
-  </p>
+  <h2 id='publish'>Publish</h2>
+  <ProjectSection
+    project={[
+      {
+        name: '📒 Twinloop',
+        description: 'Simulation-in-the-Loop Digital Twins for Online Multi-Agent Reinforcement Learning',
+        links: [
+          { type: 'github', href: 'https://github.com/asia-lab-sustech/TwinLoop' },
+          {
+            type: 'doc',
+            href: 'https://arxiv.org/pdf/2604.06610'
+          }
+        ]
+      }
+    ]}
+  />
   <p>
     如果你觉得有趣的话，可以通过以下方式支持我：
   </p>
   <Button title='Checkout sponsorship' class='w-fit' href='#sponsorship'>
     <Icon class='size-5' name='receive-money' slot='before' />
   </Button>
-<!-- 
-  <h2 id='theme'>Theme</h2>
-  <ProjectSection
-    project={[
-      {
-        name: '🍭 Astro-theme-pure',
-        description: 'A simple, clean but powerful blog theme build by astro.',
-        links: [
-          { type: 'github', href: 'https://github.com/cworld1/astro-theme-pure' },
-          { type: 'site', href: 'https://github.com/cworld1/astro-theme-pure' },
-          {
-            type: 'doc',
-            href: 'https://github.com/cworld1/astro-theme-pure/blob/main/src/content/blog/customize/index.md'
-          }
-        ]
-      }
-    ]}
-  />
 
+
+<!-- 
   <h2 id='programs'>Programs</h2>
   <ProjectSection
     project={[
