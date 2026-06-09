@@ -488,6 +488,6 @@ Users(user_id=2)
 
 ## 参考资料
 
-- https://blog.engine.wang/posts/bigtable/
-- https://www.cnblogs.com/linbingdong/p/6253479.html
+- [BigTable 解析](https://blog.engine.wang/posts/bigtable/)
+- [分布式事务详解](https://www.cnblogs.com/linbingdong/p/6253479.html)
 - 之后还有 Dapper、Dremel、PowerDrill 等谷歌的系统

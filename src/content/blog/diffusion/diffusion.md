@@ -451,3 +451,10 @@ Early stopping 不是技巧而是必需。在监督学习里 early stopping 是"
 这个结论不能推广到语言模型。语言模型（LLM）也会记忆训练数据，但机制不同：扩散模型的损失函数最优解本身就是记忆解——这是数学必然。而 LLM 训练的是下一 token 预测，全局最优是真实条件概率 $P(x_{t+1} | x_1, ..., x_t)$——这是一个泛化的目标，不是记忆。LLM 的记忆主要来自训练数据的重复——出现多次的序列被记住。所以 LLM 的记忆防护策略是数据去重、差分隐私训练等，和本文的 early stopping 策略不同。本文的 $\tau_{\text{mem}} \propto n$ 标度律和 $(n, p)$ 相图只对扩散模型成立。
 
 另一方面，该研究基于标准的像素级 U-Net 扩散模型展开，而目前的绝对技术主流已经转向了潜在扩散模型（Latent Diffusion Models, LDMs，如Stable Diffusion）。在LDMs中，扩散动力学并不是在三维像素空间中演化，而是在由强大的变分自编码器（VAE）高度压缩并正则化后的低维潜空间中进行。这种潜空间的固有频率偏置（Frequency-dependent learning bias）和流形维度将发生剧烈畸变。在这个被正则化过的低维空间中，$\tau_{gen}$ 是否还能保持完美的常数不变？这是学术界和基础模型开发者在将这一理论转化为工业级调参守则时，必须立刻展开验证的致命盲区。
+
+## References
+
+- [diffusion model是什么?](https://blog.csdn.net/m0_59012280/article/details/155040575)
+- [Score-Based SDE 理论推导（博客1）](https://blog.csdn.net/m0_62249876/article/details/134358417)
+- [SDE（随机微分方程）](https://blog.csdn.net/xzs1210652636/article/details/145373585)
+- [SDE 学习笔记](https://zhuanlan.zhihu.com/p/405174311)
