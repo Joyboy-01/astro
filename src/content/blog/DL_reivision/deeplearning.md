@@ -20,9 +20,13 @@ perceptron 1958 $\rightarrow$ Backpropagation  1974 $\rightarrow$ boltzman machi
 **deeplearning**: A family of parametric, non-linear and hierarchical representation learning functions, which are massively optimised with (stochastic) gradient descent
 
 **Cost functions**: like CE([Entropy & Cross-Entropy](https://zhuanlan.zhihu.com/p/149186719))
+
 **Output units**: sigmoid, softmaxr
+
 **Hidden units**: relu, leaky relu,sigmoid and so on $\sigma'(x) = \sigma(x)(1 - \sigma(x))$
+
 **Architecture**: layers, depth(the number of layer)
+
 universal approximation theorem:  provided it has enough units, a single layers is sufficient to approximate any continuous function on a closed and bounded subset of ${R}^n$
 
 **Backpropagation**: chain rule
