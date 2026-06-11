@@ -7,7 +7,7 @@ tags:
 language: 'english'
 ---
 
-## **history:**
+## **history**
 
 perceptron 1958 $\rightarrow$ Backpropagation  1974 $\rightarrow$ boltzman machine 1982 $\rightarrow$ multilayer proception / RNN 1986 $\rightarrow$  LeNet 1990 $\rightarrow$ bidirection RNN/ LSTM 1997  $\rightarrow$  1998 LeNet-5  $\rightarrow$  2006 DBN  $\rightarrow$  2012 AlexNet  $\rightarrow$   2015 ResNet
 
@@ -21,9 +21,9 @@ perceptron 1958 $\rightarrow$ Backpropagation  1974 $\rightarrow$ boltzman machi
 
 **Cost functions**: like CE([Entropy & Cross-Entropy](https://zhuanlan.zhihu.com/p/149186719))
 
-**Output units**: sigmoid, softmaxr
+**Output units**: sigmoid, softmax
 
-**Hidden units**: relu, leaky relu,sigmoid and so on $\sigma'(x) = \sigma(x)(1 - \sigma(x))$
+**Hidden units**: relu, leaky relu, sigmoid and so on $\sigma'(x) = \sigma(x)(1 - \sigma(x))$
 
 **Architecture**: layers, depth(the number of layer)
 
@@ -411,7 +411,7 @@ Conditional positional encoding ( Chu et al, ICLR2023).
 
 **Masked self-attention layer**
 
-A self-attention module with masks to block future positions, ensuring each token only attends to preceding elements, widely used in sequence generation.
+A self-attention module with masks to block future positions, ensuring each token only attends to preceding elements, widely used in sequence generation. Allows us to parallelize attention across time
 
 **Multi-head self-attention layer**
 
@@ -443,12 +443,14 @@ VIT: Standard Transformer on Patches
 
 Regularization for ViT models:
 
-- Weight Decay
-- Stochastic Depth
+- Weight Decay: $L = L_{\text{task}} + \frac{\lambda}{2}\sum w^2 \text{, and }w_{t+1} = w_t - \eta\left( \frac{\partial L_{\text{task}}}{\partial w_t} + \lambda w_t \right)$
+- Stochastic Depth: $H_{\ell} = \operatorname{ReLU}\big(b_{\ell} \cdot f_{\ell}(H_{\ell-1}) + H_{\ell-1}\big),\ b_{\ell} \in \{0,1\}$
 - Dropout (in FFN layers of Transformer)
+
 Data Augmentation for ViT models:
-- MixUp
-- RandAugment
+  - MixUp: Linearly interpolates pairs of samples and labels to regularize model.
+  - RandAugment: Applies random combinations of basic image augmentations with limited magnitude.
+
 Distillation:
 Train a teacher model on images and ground-truth labels
 Train a student model to match predictions from the teacher (sometimes also to match GT labels)
@@ -516,10 +518,12 @@ The image is split into 9 patches and shuffled. The model takes these patches as
 Learning by Inpainting: Input -> Encoder -> Decoder -> output
 
 **Colorization**
+
 ![](./Colorization.png)
 Generative pretext tasks force the model to learn trivial pixel-level details (e.g., precise color tones) that are useless for downstream tasks. Split-Brain Autoencoder solves this by predicting one set of image channels from another, focusing on meaningful cross-channel relations instead of exact pixel reconstruction.
 
 **Deep Clustering**
+
 Deep Clustering jointly learns data representations and cluster assignments via neural networks. It uses an autoencoder to compress input into low-dimensional features, then iteratively clusters features (e.g., K-means) and trains the network with cluster-based loss, grouping similar samples without labels.
 
 It is hard to fairly compare SSL methods due to diverse experimental settings, including network architectures, datasets, evaluation protocols and hyperparameters.
@@ -546,7 +550,15 @@ $$
 L_{InfoNCE}=−E_x[log\frac{exp(f(x,y))}{exp(f(x,y))+∑_{i=1}^{N−1}exp(f(x,yi))}]
 $$
 
-Looks like Cross entropy loss for a N-way softmax classifier!
+Looks like Cross entropy loss for a N-way softmax classifier! 
+
+$$
+-\sum_{x} p(x)\log q(x)
+$$
+
+p(x): Ground-truth distribution, represented as one-hot encoding.
+
+q(x): Model prediction distribution obtained via softmax.
 
 Minimizing the InfoNCE loss is equivalent to maximizing the lower bound of mutual information between two variables.
 
@@ -555,6 +567,8 @@ Minimizing the InfoNCE loss is equivalent to maximizing the lower bound of mutua
 $$
 I(X;Y)≥log(N)−L_{InfoNCE}
 $$
+
+The larger the negative sample size (N), the tighter the bound
 
 [Variational Bounds on Mutual Information](https://m-wiesner.github.io/Variational-Bounds-on-Mutual-Information/)
 
@@ -601,6 +615,12 @@ input (full image) → patch embedding → shuffle & mask (keep 25%) → Encoder
 
 Video, Sound, 3D, Language
 
+Language：
+
+1. Semantic density: Just a few words give rich information
+2. Universality: Language can describe any concept
+3. Scalability: Non-experts can easily caption images; data can also be collected from the web at scale
+
 **CLIP**
 
 - ${v_i}$: Image feature vector of the i-th image
@@ -624,6 +644,8 @@ $$
 \min \mathcal{L}_{\text{InfoNCE}} \iff \max \; \text{lower bound of } I(v;t)
 $$
 
+![](CLIP.png)
+
 ![](./CLIPZEROSHOT.png)
 
 ## VAE & GAN
@@ -645,7 +667,7 @@ $$
 l_i(\theta, \phi) = -\mathbb{E}_{z \sim q_\theta(z|x_i)}\left[\log p_\phi(x_i|z)\right] + KL\left(q_\theta(z|x_i) \parallel p(z)\right)
 $$
 
-The prior distribution of latent variables is set to standard Gaussian distribution $\mathcal{N}(0,1)$. The model regularizes the encoded distribution to approach the prior, forming a continuous and smooth latent space for new sample generation.
+The prior distribution of latent variables $p(z)$ is set to standard Gaussian distribution $\mathcal{N}(0,1)$. The model regularizes the encoded distribution to approach the prior, forming a continuous and smooth latent space for new sample generation.
 
 [KL divergence](https://s-ai-unix.github.io/posts/2026-02-03-kl-divergence-information-theory/)
 
@@ -693,12 +715,11 @@ prof. jianguo's scripts
 Generative adversarial networks: can we learn just the generator?
 - GANs propose to learn the loss function
 - The training process is a game between two networks
-
 - Generator: learns to generate samples
 - Discriminator: learns to distinguish between generated and real samples
 - Adversarial training: the generator tries to fool the discriminator while the discriminator tries to get better at distinguishing fake vs real images. When the discriminator spots a fake the generator adjusts its parameters, until at the end the generator reproduces the true data distribution and the discriminator is unable to find differences
 Note: both the generator and the discriminator need to be differentiable
-
+![GAN](GAN.png)
 **minimax strategy**
 
 $$
@@ -796,7 +817,7 @@ In practice, $Σ$ is set to $\sigma_t^2I$ ($\sigma_t$ as hyperparameter), so we 
 
 Objective: learn $p_\theta(\mathbf{x}_{t-1} \mid \mathbf{x}_t)$, more precisely $\boldsymbol{\mu}_\theta(\mathbf{x}_t, t)$ (by U-net)
 
-GT (Posterior Distribution): $q(\mathbf{x}_{t-1} \mid \mathbf{x}_t,\mathbf{x}_0) = \mathcal{N}\big(x_{t-1}; \hat{\boldsymbol{\mu}}_t(x_t, x_0), \hat{\beta}_t \mathbf{I}\big)$, where $\tilde{\mu}_t(x_t, x_0) = \frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})x_t + \sqrt{\bar{\alpha}_{t-1}}\beta_t x_0}{1-\bar{\alpha}_t}$ and $\tilde{\beta}_t = \frac{1-\bar{\alpha}_{t-1}}{1-\bar{\alpha}_t}\beta_t$
+GT (Posterior Distribution): $q(\mathbf{x}_{t-1} \mid \mathbf{x}_t,\mathbf{x}_0) = \mathcal{N}\big(x_{t-1}; \hat{\boldsymbol{\mu}}_t(x_t, x_0), \hat{\beta}_t \mathbf{I}\big)$, where $\tilde{\mu}_t(x_t, x_0) = \frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})x_t + \sqrt{\bar{\alpha}_{t-1}}\beta_t x_0}{1-\bar{\alpha}_t}$ and $\tilde{\beta}_t = \frac{1-\bar{\alpha}_{t-1}}{1-\bar{\alpha}_t}\beta_t$, **In the reverse process, the transition cannot be factorized into a simple single-step dependency**: [为什么反向markov不能只看一步？](/blog/diffusion2/diffusion2).
 
 by bayesian
 $$
@@ -1108,13 +1129,16 @@ $$
 
 ### Tokenization & BPE
 
-- Word tokenization
+- **Word tokenization**
 	- Word tokenizers require lots of specialized rules about how to handle specific inputs
 	- With word level tokenization, we have no way of assigning an index to an unseen word! This means we don’t have a word embedding for that word and thus cannot process the input sequence
 	- $<UNK>$ lose lots of information about texts with a lot of rare words / entities
 	- Word-level tokenization treats different forms of the same word (e.g., “open”, “opened”, “opens”, “opening”, etc) as separate types -> separate embeddings for each
-- character tokenization：It greatly increases the length of input sequences, raising the computational overhead and sequence processing pressure for models such as the Transformer.
--  subword tokenization & Byte pair encoding
+- **character tokenization**
+  
+  It greatly increases the length of input sequences, raising the computational overhead and sequence processing pressure for models such as the Transformer.
+
+-  **subword tokenization & Byte pair encoding**
 	1. Form base vocabulary (all characters that occur in the training data)
 	2. count up the frequency of each character pair in the data, and choose the one that occurs most frequently
 	3. choose the most common pair (ug) and then merge the characters together into one symbol. Add this new symbol to the vocabulary. Then, retokenize the data
@@ -1122,7 +1146,7 @@ $$
 	5. Eventually, after a fixed number of merge steps, we stop
 	- to avoid $<UNK>$, all possible characters / symbols need to be included in the base vocab. This can be a lot if including all unicode characters (there are ~138K unicode symbols)!
 	- GPT-2 uses bytes as the base vocabulary (size 256) and then applies BPE on top of this sequence (with some rules to prevent certain types of merges).
-- Limitations of subwords
+- **Limitations of subwords**
 	- Hard to apply to languages with agglutinative (e.g., Turkish) or non-concatenative (e.g., Arabic) morphology
 	- Pretokenization rules don’t work on some languages (Thai, Chinese don’t use spaces between words; Hawaiian uses punctuation as consonants)
 
@@ -1173,6 +1197,7 @@ CoT and so on
 **Few-shot Learning**
 
 **Fine-Tuning vs. In-Context Learning**
+
 even for very large LMs, fine-tuning often beats in-context learning
 
 In a fair comparison of fine-tuning (FT) and in-context learning (ICL), we find that FT
@@ -1198,6 +1223,7 @@ add additional layers that have few parameters and tune only the parameters of t
 - Sometimes adapters even outperform full fine-tuning
 
 - **MLM Pretraining**
+  
 	Rather than trying to predict the next word from the previous ones mask out a word (or a few words) and predict the missing words from the remaining ones
 
 The main disadvantage of Adapter is that it introduces additional inference latency and parameters: because extra computation modules are inserted into the middle of the model, even if each module is small, they add computational time and memory access overhead during inference; additionally, each task requires saving its own set of Adapter parameters, so resource consumption accumulates when deploying multiple tasks.
@@ -1225,6 +1251,7 @@ Empirical results suggest that pre-training finds parameters that have low intri
 ![](<./Intrinsic_Dimensionality.png>)
 
 **LoRA**
+
 learn a small delta for the each of the parameter matrices with the delta chosen to be low rank
 
 - Motivation 1:
@@ -1251,7 +1278,7 @@ $W_0$ and BA have the same dimension, so we can ”swap” the LoRA parameters i
 ![](<./LoRA_for_Transformer.png>)
 where $r << min(d, k)$
 
-Takeaways
+**Takeaways**
 
 - Applied to GPT-3, LoRA achieves performance almost as good as full fine- tuning, but with far fewer parameters
 - On some tasks it even outperforms full fine- tuning
