@@ -768,7 +768,7 @@ Both generator and discriminator take an additional condition embedding $c$ to p
 $$\min_G\max_D V(D,G) = \mathbb{E}_{x,c}[\log D(x,c)] + \mathbb{E}_{z,c}[\log(1-D(G(z,c),c))]
 $$
 The GAN objective is conditioned on $c$, guiding the model to generate samples matching the given condition.
-
+![CGAN](CGAN.png)
 ## diffusion model
 
 [Awsome blog](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/)(Weng, Lilian. (Jul 2021). What are diffusion models? Lil’Log.)
@@ -889,7 +889,9 @@ The model's mean $\boldsymbol{\mu}_\theta$ and variance $\boldsymbol{\Sigma}_\th
 
 - Condition Injection into U-Net - Scalar conditioning (e.g., class labels, style): Encode the scalar into a vector embedding, then inject it via spatial addition or adaptive group normalization (AdaGN).
 - Image conditioning (e.g., sketches, masks): Concatenate the conditional image with the input image along the channel dimension.
-- Text conditioning (e.g., prompts): - Single vector embedding: Use spatial addition or AdaGN. - Sequence of vector embeddings (e.g., word tokens): Use cross-attention.
+- Text conditioning (e.g., prompts): 
+  - Single vector embedding: Use spatial addition or AdaGN. 
+  - Sequence of vector embeddings (e.g., word tokens): Use cross-attention.
 
 **Classifier guidance: a tool for conditional generation**
 
