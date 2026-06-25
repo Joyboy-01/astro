@@ -7,7 +7,7 @@ tags:
 language: '中文'
 ---
 
-[Brady Neal, "Introduction to Causal Inference"](https://claude.ai/chat/91febc5d-b8aa-4dd8-8063-44300a4e8bfb)
+[Brady Neal, "Introduction to Causal Inference"](https://www.bradyneal.com/causal-inference-course)
 ：written from a machine learning perspective
 
 ## Chapter 1 Course Overview
