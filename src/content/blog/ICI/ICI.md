@@ -338,7 +338,7 @@ d-分离（有向分离）是用来判断：在给定某组变量 Z 后 T 和 Y 
 2. 指导该控制哪些变量（混杂识别）
 3. 在未知结构下自动学习图（因果发现）
 
-## Causal Models
+## Chapter 4 Causal Models
 
 ![alt text](Identification-Estimation.png)
 Identification是利用 Causal Model（尤其是 DAG 和假设）将 Causal Estimand 转化为 Statistical Estimand 的过程
@@ -454,7 +454,7 @@ $$
 
 ATE 等价于 backdoor adjustment，只不过一个是求期望后相减，另一个是直接求出分布，他们都消除了混杂因素的影响。
 
-## Structural causal models（SCM）
+## Chapter 5-6 Structural causal models（SCM）
 
 **=** 不传递因果信息，我们使用 **:=** 来表示因果 
 
@@ -643,7 +643,7 @@ $$
 
 ![alt text](Necessary_and_sufficient_condition.png)
 
-## Estimation
+## Chapter 7 Estimation
 
 因果关系的估计：把不可观测的因果理论（Target Parameter），通过数学方法转化为可以用真实数据计算的统计数值（Statistical Estimate）
 
@@ -735,13 +735,17 @@ $$
 e(W) = P(T = 1 \mid W)
 $$
 
+$e(W)$体现了个体的选择倾向。如果两个个体估计出来的$e(W)$相等，那么个体之间被分配到哪个组是随机的。
+
 即使 $W$ 是高维的，$e(W)$ 也仅仅是1维的！
 
 倾向性分数定理
 ![alt text](Propensity.png)
 positivity violation的概率变小了，因为W的维度变化不会造成positivity的变化（破除了维度的诅咒Positivity-Unconfoundedness Tradeoff）
 
-然而我们只能通过模型学习$e(W)$而不能直接得到，所以实际上他并没有解决高维 $W$ 带来的重合性低下的问题
+然而我们只能通过模型学习$e(W)$而不能直接得到，所以实际上他并没有解决高维 $W$ 带来的重合性低下的问题。高维混杂变量导致观测数据在物理上存在严重的“重合性低下（Lack of Overlap）”缺陷；此时利用机器学习估计倾向得分，不可避免地会陷入“模型过强导致逆概率加权（IPW）方差爆炸”与“模型设错导致伪重合偏差”的双重困境。
+
+因此，倾向得分的本质并非消灭维度灾难，而是将其转化为可诊断、可修剪的一维工程问题，迫使估计目标从全人群效应（ATE）向局部效应（ATT/ATO）进行务实妥协，并最终确立了引入边界分析（Bounds）进行非参数底线防御的必然性。
 
 Q: What is the intuition behind why we can 
 condition on e(W) instead of W?
@@ -767,6 +771,20 @@ $$
    - 后果：若数据中存在未被观测或未纳入模型的关键混淆变量（如隐藏的用户心理动机或外生政策冲击），伪总体在这些未观测维度上依然存在选择性偏差，无法消除由于后门路径未完全关闭导致的因果偏误。
 
 **Inverse probability weighting (IPW)**
+
+- IPW 权重（Inverse Probability Weight）
+$$
+d = \frac{1}{e(W)}
+$$
+物理意义是：当前这个样本，在虚拟的“完美随机世界”里，应该代表多少个一模一样的人？
+对于每一个个体 $i$，他的权重定义为：
+$$
+d_i = \frac{T_i}{e(W_i)} + \frac{1 - T_i}{1 - e(W_i)}
+$$
+
+$$
+ATE = \frac{1}{N} \sum_{i=1}^N \frac{T_i Y_i}{e(W_i)} - \frac{1}{N} \sum_{i=1}^N \frac{(1 - T_i) Y_i}{1 - e(W_i)}
+$$
 
 ![alt text](IPW.png)
 重加权通过改变比例，在数学上强行制造了独立性
