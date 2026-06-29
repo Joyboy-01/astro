@@ -17,6 +17,7 @@ language: '中文'
 **Simpson's paradox**: 不均衡的子组权重分配导致分组和最终总和得到的结果不同。
 
 ![simpson](simpson.png)
+
 但是因果图可能根据情况不同而不同（比如治疗方式可能影响病人的情况，或者情况决定治疗方式）所以我们不能盲目的说哪个效果是更好的
 
 ### Correlation doesn't imply causation
@@ -39,7 +40,7 @@ $$
 \text{causal effect} = Y_i|_{do(T=1)} - Y_i|_{do(T=0)} = Y_i(1) - Y_i(0).
 $$
 
-这里要说明的是两者在数学上是相等的，但是物理意义不同$Y_i(1)$是属性，代表事情自然发生而应有的结果，而$Y_i|_{do(T=1)}$是涉及物理干预，强行给T赋值的观测结果。两者由于T相同，所以结果应该相同，但是过程不一样。
+$Y_i|_{do(T=1)}$涉及物理干预，是强行给T赋值的观测结果。
 
 **Individual treatment effect (ITE)**
 
@@ -81,6 +82,8 @@ $$
 充分调整集（sufficient adjustment set）等价于条件可忽略性 Ignorability / Unconfoundedness（在概率图上截断了C到T的箭头）
 （按照上面的例子病情严重与否就是一个充分调整集合a）
 ![alt text](cofounder.png)
+没有混杂的时候（即 $Y \to T$），我们认为 $P(Y|do(T = t)) = P(Y|T = t)$（因为如果只有一个 $T$ 影响 $Y$，那么自然观察和人为干预是没有区别的，即 $T$ 无论是怎么被选定的，结果都一样），但是有混杂的时候不成立
+
 Solution 2: frontdoor adjustment.
 
 ## Chapter 2 Potential Outcomes
@@ -107,7 +110,7 @@ $$
 
 当满足Ignorability的时候，ATE = AD (associatial difference)，因为cofouder完全不相关，这可以理解为随机性的分配（即Y的群体选择1还是0都是随机的，所以$\mathbb{E}[Y(1) \mid T = 1] = \mathbb{E}[Y(1) \mid T = 0] = \mathbb{E}[Y(1)]$）。
 
-对公式的翻译可以是这样：在原本Y群体在使用t有效的期望=目前在使用t的群体中在原本使用t就有效的期望=目前在使用t的群体中有效的期望。即“全人类的潜力” = “吃药组的潜力” = “吃药组的现实”。Ignorability 的作用，就是废除了“选择偏差”。consistency 取消了其他变量的影响
+对公式的翻译可以是这样：在原本 $Y$ 群体在使用 $t$ 有效的期望 = 目前在使用 $t$ 的群体中在原本使用 $t$ 就有效的期望 = 目前在使用 $t$ 的群体中有效的期望。即“全人类的潜力” = “吃药组的潜力” = “吃药组的现实”。Ignorability 的作用，就是废除了“选择偏差”。consistency 保证了实际观测到的 $Y$ ,等于实际接受的那个处理下的潜在结果
 
 也可以理解为exchangebility，两者是同一个概念的不同角度
 
@@ -199,6 +202,8 @@ Y_i=T_iY_i(1)+(1−T_i)Y_i(0)
 $$
 你实际看到的结果，就是你对应干预下本该出现的反事实结果
 
+一个最典型的违反 consistency 的例子是：同一个处理标签 $T=t$ 实际上包含多个不同版本，而 $Y(t)$ 没有说明是哪一种版本。
+
 ### Adjustment Formula
 
 在满足三大核心假设（Unconfoundedness + Positivity + Consistency）的前提下，我们可以直接用观测数据中的“条件均值差”来估计“平均因果效应（ATE），也就是说理论上可以用数据区推断因果关系
@@ -252,7 +257,7 @@ $$
 
 **Local Markov assumption**
 
-X 与其所有非后代节点相互独立。也就是只与自己的夫节点相关
+X 与其所有非后代节点相互独立。也就是只与自己的父节点相关
 
 $$
 P(x_1,x_2,...,x_n) = \prod_i
@@ -299,8 +304,8 @@ $$
 
 - chain：传递因果效应，控制了 $X_2$，那么$X_1$和 
 $X_3$之间的信息流就被切断了，它们变得独立。
-- Fork：制造虚假相关（混杂）。 这是混淆偏差（Confounding）的根源。如果不控制 $X_2$，那么$X_1$和$X_3$是相关的（因为它们有共同的源头$X_2$，比如“夏天”同时导致“冰淇淋销量”和“溺水”）。如果控制 $X_2$则关联被切断
-- Immorality：天然阻断路径，但控制后会打开（选择偏差）。如果不控制 $X_2$（Collider）或其子结点，那么$X_1$和$X_3$是独立的（因为两个独立的原因共同导致一个结果，它们本身没有关系）。但是如果控制$X_2$或其子结点，那么$X_1$和$X_3$反而可能有相关性，
+- Fork：制造虚假相关（混杂）。 这是混淆偏差（Confounding）的根源。如果不控制 $X_2$ ，那么 $X_1$ 和 $X_3$ 是相关的（因为它们有共同的源头$X_2$，比如“夏天”同时导致“冰淇淋销量”和“溺水”）。如果控制 $X_2$则关联被切断
+- Immorality：天然阻断路径，但控制 $X_2$ 或子结点后会打开（选择偏差）。如果不控制 $X_2$（Collider）或其子结点，那么$X_1$和$X_3$是独立的（因为两个独立的原因共同导致一个结果，它们本身没有关系）。但是如果控制$X_2$或其子结点，那么$X_1$和$X_3$反而可能有相关性，
 
 | 结构名称 | 图 | 不控制中间节点时 | 控制中间节点时 |
 | :--- | :--- | :--- | :--- |
@@ -341,7 +346,8 @@ d-分离（有向分离）是用来判断：在给定某组变量 Z 后 T 和 Y 
 ## Chapter 4 Causal Models
 
 ![alt text](Identification-Estimation.png)
-Identification是利用 Causal Model（尤其是 DAG 和假设）将 Causal Estimand 转化为 Statistical Estimand 的过程
+
+**Identification是利用 Causal Model（尤其是 DAG 和假设）将 Causal Estimand 转化为 Statistical Estimand 的过程**
 
 ### The do-operator
 
@@ -358,7 +364,7 @@ $$
 **Average treatment effect (ATE)**
 
 $$
-\underbrace{\mathbb{E}[Y \mid do(T = 1)]}_{Observational} - \underbrace{\mathbb{E}[Y \mid do(T = 0)]}_{Interventional}
+{\mathbb{E}[Y \mid do(T = 1)]} - {\mathbb{E}[Y \mid do(T = 0)]}
 $$
 
 **Observational vs. Interventional**
@@ -408,7 +414,7 @@ $P(y | t)$包括混杂因素，$P(y | do(t))$隐含了对所有x求期望的含�
 **backdoor paths**
 
 连接因果的无向通路，满足：
-1. 第一步箭头反向离开 $T$ ：$T\rightarrow …$
+1. 第一步箭头反向离开 $T$ ：$T\leftarrow …$
 2. 通路无原生阻断（无未控制的对撞节点），能传递虚假相关
 正向因果链 
 3. $T→⋯→Y$ 永远不是后门。
@@ -442,9 +448,9 @@ $W$被称作sufficient adjustment set
 
 ![alt text](Backdoor2.png)
 
-其中$W_2$是fork，控制之后切断关系。$X_2$是Immorality，不控制则切断了关系
+其中$W_2$是fork，控制之后切断关系。$X_2$ 是Immorality，不控制则切断了关系
 
-第三张图是假设我们控制T，即$do(T = t)$则 $T$ 和 $Y$ d 分离
+第三张图是假设我们控制T，即 $do(T = t)$ 则 $T$ 和 $Y$ d 分离
 
 $$
 Y \perp\!\!\!\perp_{G_{\overline{T}}} T \mid W
@@ -517,7 +523,9 @@ $$
 
 在干预 $T$ 发生之前变量间的统计相关性，本质：观测层面的相关关系
 
-也叫做 **M-bias**
+**M-bias**
+
+错误控制 collider 导致的偏差
 
 ![alt text](M-bias.png)
 
@@ -542,6 +550,8 @@ $$
 除了treatment对照组和实验组所接受的其他条件都是相同的
 
 Covariate balance definition：the distribution of covariates $X$ is the same across treatment groups. 
+
+Covariate：协变量
 
 $$
 P(X \mid T = 1) \stackrel{d}{=} P(X \mid T = 0)
@@ -569,13 +579,15 @@ Write down the formal definition of
 
 ### Frontdoor adjustment
 
+前门结构里假设 $T$ 和 $M$ 之间没有未观测混杂。
+
 当后门路径上的变量不可被观测的时候，我们使用前门调整：通过关注only causal association
 
 ![alt text](Frontdoor.png)
 
 ![alt text](frontdoor_2.png)
-- step1:没有后门路径$P(m\mid do(t)) = P(m\mid t)$
-- step2:后门路径$M-T-W-Y$, 控制t：$P(y\mid do(m)) = \sum_t P(y \mid m,t)P(t)$
+- step1:没有后门路径 $P(m\mid do(t)) = P(m\mid t)$
+- step2:后门路径 $M-T-W-Y$ , 控制t：$P(y\mid do(m)) = \sum_t P(y \mid m,t)P(t)$
 
 **proof of frontdoor adjustment using the truncated factorization**
 
@@ -588,29 +600,31 @@ Write down the formal definition of
 **Can we identify the causal effect if neither the backdoor criterion  nor the frontdoor criterion is 
 satisfied?**
 
-Pearl’s do-calculus可以让我们识别任何可识别的causal quantity $P(Y \mid do(T = t,X= x))$ 其中其中 $T,X,Y$ 为任意集合（可以是多个treatment或多个outcome）
+Pearl’s do-calculus可以让我们识别任何可识别的 causal quantity $P(Y \mid do(T = t,X= x))$ 其中其中 $T,X,Y$ 为任意集合（可以是多个treatment或多个outcome）
 
 对于图中任意节点 $X$：
 1. $\overline{X}$（上横线）：执行 $do(X=x)$，**移除所有指向 $X$ 的入边**，切断所有上游对 $X$ 的因果影响；
 2. $\underline{X}$（下横线）：移除所有从 $X$ 出发的出边，阻断 $X$ 对下游变量的全部因果传递。
 
+**Rules**
+
 Rule1：观测条件里增减条件变量（d分离等价替换）
 ![alt text](rule-1.png)
-d-分割在干预分布下的拓展（把do(t)移走可以看出来）
+d-分割在干预分布下的拓展（把do(t)移走可以看出来），问的是在已有条件下，知道 $Z=z$ 是否还能提供关于 $Y$ 的信息。
 
 
 Rule2：$do(\cdot) \leftrightarrow$ 观测条件（后门准则本质）
 ![alt text](rule-2.png)
-d-分割下后门调整的框架把do(t)移走可以看出来）
+d-分割下后门调整的框架（把do(t)移走可以看出来），问的是观察到 $Z=z$ 和人为设定 $Z=z$，是否具有相同的效果。也就是说在消除 $Z$ 的出边（也就是 $Z$ 和 $Y$ 的有向因果路径），$Z$ 是否还会通过非因果路径（在数据上有关系但是不是 $Z \to Y$ 的直接路径传递的，比如fork）影响 $Y$
 
 
 Rule3：直接删掉无因果作用的 $do(\cdot)$
 ![alt text](rule-3.png)
 Q：为什么这里的角标是 $Z_W$ 而不是 $Z$ 呢？
 
-A：$Z_W$ 是对撞节点；控制它的后代 $W$ 会导致通路 $A \to Z_W \leftarrow B \to Y$ 被打开，产生虚假关联。如果直接用全集合 $Z$（不用子集 $Z(W)$）、画 $G_{\overline{Z}}$：会删掉 $Z_W$ 入边，阻断这条虚假通路，误判独立。所以必须限定只用子集 $Z(W)$：只剔除 $Z$ 中 $W$ 的祖先，保留这条伪通路，保证d分离判断准确
+A：$Z_W$ 是对撞节点；控制它的后代 $W$ 会导致通路 $Z_W \leftarrow B \to Y$ 被打开，产生虚假关联。如果直接用全集合 $Z$（不用子集 $Z(W)$）、画 $G_{\overline{Z}}$：会删掉 $Z_W$ 入边，阻断这条虚假通路，误判独立。所以必须限定只用子集 $Z(W)$：只剔除 $Z$ 中 $W$ 的祖先，保留这条伪通路，保证d分离判断准确
 
-
+我们可以这样理解图：在什么图条件下，概率表达式中的某一项可以被简化，从而我们可以尽可能少的观测和干预就能得到因果。
 
 **Proof of the frontdoor adjustment using do-calculus in Section 6.2.1 of the course book (compare with proof using truncated factorization in Section 6.1)**
 
@@ -655,9 +669,9 @@ $$
 
 通过estimate来确定关系的强弱（条件的影响）
 
-### Conditional Outcome Modeling / S-learner
+### Conditional Outcome Modeling / Single-learner
 
-COM 实际上把“因果推断”完全简化为了一个“监督学习的预测问题”
+COM 实际上把“因果推断”完全简化为了一个“监督学习的预测问题”，核心是直接建模$m(t,x):=\mathbb{E}[Y\mid T=t,X=x]$
 
 ![alt text](COM.png)
 
@@ -677,7 +691,7 @@ $$
 
 当输入的维度较高时，模型忽略 $T$
 
-### Grouped COM（GCOM）/ T-learner
+### Grouped COM（GCOM）/ Two-learner
 
 ![alt text](GCOM.png)
 根据t的不同选用不同的网络。
@@ -828,11 +842,15 @@ $$\hat{\tau}_{AIPW} = \frac{1}{N}\sum_{i=1}^N \left[ \left( \hat{\mu}_1(X_i) + \
 
 **double machine learning**
 
+DML 适用于协变量很多、关系复杂，希望使用机器学习调整混杂，同时仍进行有效统计推断
 ![alt text](DML.png)
+在具有相似预测特征 X 的个体中，处理变量中无法被 X 解释的部分，是否导致结果变量中无法被 X 解释的部分发生变化。
 
 **Causal trees and forests**
 
 ![alt text](Causal_trees.png)
+
+以上方法主要解决的是已观测混杂变量 $X$ 的调整问题
 
 ## reference
 
