@@ -522,7 +522,7 @@ Or nonlinear structural equations?
 - Large samples can be necessary for conditional independence tests
 - Only identifies the Markov equivalence class
 
-### No Identifiability Without Parametric Assumptions**
+### No Identifiability Without Parametric Assumptions
 
 **Two Variable Case**
 
@@ -730,6 +730,8 @@ Pearl & Bareinboim (2014)。
 
 
 ## Chapter 14 Counterfactuals and Mediation
+
+现实中很多关心的问题，并不在我们所得到的数据中，光靠总体统计量原则上无法从数据里唯一确定。通过反事实和控制中间变量可能可以找到真正关心的问题或者变量，但是必须承担更多的假设开销
 
 ### Counterfactuals Basics
 
