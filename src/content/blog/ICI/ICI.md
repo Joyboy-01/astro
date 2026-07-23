@@ -56,6 +56,8 @@ $$
 
 很容易混淆：$Y(1)$是和现实无关的。而$Y| T = 1$是和现实相关的。大多数情况两者不等，因为后者分配规则会受混杂变量影响，导致该群体基线特征与全人群存在偏差，而前者是和现实无关的理想状态。但是当满足条件（Ignorability）时候，两者可以相等，因为条件对于观测没有影响，偏差被消除。
 
+条件也可以看作是我们固定只是看一个群体，而干预是我们让所有的群体都是一样的值。他们都能让经过给定值的路径在数据中失效。
+
 **Randomized control trials (RCTs)**
 
 experimenter randomizes subjects into treatment group or control group
@@ -95,6 +97,10 @@ $$
 ### What assumptions would make the ATE equal to the associational difference
 
 **Ignorability**
+
+$$
+Ignorability =Unconfoundedness ∩ Positivity
+$$
 
 $$
 (Y(1), Y(0))\perp\!\!\!\perp T
@@ -268,7 +274,7 @@ $$
 
 **Minimality assumption**
 
-图里画出的每一条边（箭头），在数据中都必须有对应的 Statistical Dependencies（统计依赖性），这杜绝了多与的边
+图里画出的每一条边（箭头），在数据中都必须有对应的 Statistical Dependencies（统计依赖性），这杜绝了多余的边
 
 极小性假设 = 局部马尔科夫 + DAG中的相邻节点需要相关（局部极小）
 
@@ -371,8 +377,8 @@ $$
 
 |  | Observational | Interventional |
 | :---: | :---: | :---: |
-|  | $$P(Y, T, X)$$ | $$P(Y \mid do(T = t))$$ |
-|  | $$P(Y \mid T = t)$$ | $$P(Y \mid do(T = t), X = x)$$ |
+|  | $$P(Y \mid T = t)$$ | $$P(Y \mid do(T = t))$$ |
+|  | $$P(Y, T, X)$$  | $$P(Y \mid do(T = t), X = x)$$ |
 
 $$
 P(Y \mid do(T = t)) = \mathbb{E}_X[P(Y \mid do(t), X = x)]
@@ -600,13 +606,15 @@ Write down the formal definition of
 **Can we identify the causal effect if neither the backdoor criterion  nor the frontdoor criterion is 
 satisfied?**
 
-Pearl’s do-calculus可以让我们识别任何可识别的 causal quantity $P(Y \mid do(T = t,X= x))$ 其中其中 $T,X,Y$ 为任意集合（可以是多个treatment或多个outcome）
+Pearl’s do-calculus可以让我们识别任何可识别的 causal quantity $P(Y \mid do(T = t,X= x))$ 其中 $T,X,Y$ 为任意集合（可以是多个treatment或多个outcome）
 
 对于图中任意节点 $X$：
 1. $\overline{X}$（上横线）：执行 $do(X=x)$，**移除所有指向 $X$ 的入边**，切断所有上游对 $X$ 的因果影响；
 2. $\underline{X}$（下横线）：移除所有从 $X$ 出发的出边，阻断 $X$ 对下游变量的全部因果传递。
 
 **Rules**
+
+**T** 表示当前已经被干预的变量集合（即你已经对其做过了 do 的变量），**W** 表示背景条件集合（在干预和观测中，你同时要“给定”的其他变量），**Z** 表示当前准备“消除干预”的那个目标变量，**Y** 表示结果变量
 
 Rule1：观测条件里增减条件变量（d分离等价替换）
 ![alt text](rule-1.png)
@@ -615,14 +623,16 @@ d-分割在干预分布下的拓展（把do(t)移走可以看出来），问的�
 
 Rule2：$do(\cdot) \leftrightarrow$ 观测条件（后门准则本质）
 ![alt text](rule-2.png)
-d-分割下后门调整的框架（把do(t)移走可以看出来），问的是观察到 $Z=z$ 和人为设定 $Z=z$，是否具有相同的效果。也就是说在消除 $Z$ 的出边（也就是 $Z$ 和 $Y$ 的有向因果路径），$Z$ 是否还会通过非因果路径（在数据上有关系但是不是 $Z \to Y$ 的直接路径传递的，比如fork）影响 $Y$
+d-分割下后门调整的框架（把do(t)移走可以看出来）。在消除 $Z$ 的出边（由于 Z 作为原因影响其他变量而产生的路径），$Z$ 是否还会通过非因果路径（在数据上有关系但是不是 $Z \to Y$ 的直接路径传递的，比如fork）影响 $Y$。如果不存在，那么观察 $Z$ 和干预 $Z$ 对 $Y$ 的影响相同。
 
+Q：为什么删除出边
+A: ![alt text](why1.png)
 
 Rule3：直接删掉无因果作用的 $do(\cdot)$
 ![alt text](rule-3.png)
 Q：为什么这里的角标是 $Z_W$ 而不是 $Z$ 呢？
 
-A：$Z_W$ 是对撞节点；控制它的后代 $W$ 会导致通路 $Z_W \leftarrow B \to Y$ 被打开，产生虚假关联。如果直接用全集合 $Z$（不用子集 $Z(W)$）、画 $G_{\overline{Z}}$：会删掉 $Z_W$ 入边，阻断这条虚假通路，误判独立。所以必须限定只用子集 $Z(W)$：只剔除 $Z$ 中 $W$ 的祖先，保留这条伪通路，保证d分离判断准确
+A：只对不影响 W 的 Z 节点执行 $G_{\overline{Z}}$ 的边删除，避免错误切断 $Z\rightarrow W$ 这样的真实因果路径，从而使 d-separation 判断对应真实的干预分布。
 
 我们可以这样理解图：在什么图条件下，概率表达式中的某一项可以被简化，从而我们可以尽可能少的观测和干预就能得到因果。
 

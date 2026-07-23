@@ -129,7 +129,7 @@ Bound2可以识别因果效应的符号，但是代价就是估计区间的范�
 
 我们现在假设可以观测的 $W$ 和不可观测的 $U$ 给我们混杂
 
-敏感性分析：confounder对treatment的影响有多强，以及confounder对outcome的影响有多强。
+敏感性分析：confounder对treatment的影响有多强，以及confounder对outcome的影响有多强。（敏感性分析在现实中的作用是说明我们的结论可能有在假设和前提条件漏洞的情况下，是否仍然成立）
 
 **Linear Single Confounder**
 
@@ -249,7 +249,7 @@ $$
 
 线性结果假设（Linear Outcome）限制极大。该假设隐含规定处理效应 $\delta$ 对所有个体（All Units）都是一个完全相同的常数（Homogeneous）。
 
-如果在不做任何函数形式假（Nonparametric）的前提下，工具变量还能实现因果识别吗？
+如果在不做任何函数形式假设（Nonparametric）的前提下，工具变量还能实现因果识别吗？
 
 **Potential Treatment**
 
@@ -258,6 +258,8 @@ $$
 ![alt text](potential-treatment.png)
 
 **Principle Strata**
+
+它基于SUTVA，即假设每个人的行为反应是确定性的
 
 Principal Strata 就是根据个体在面对外部冲击（工具变量 $Z$）时表现出的“潜在行为模式”，将全样本划分为四个互不重叠的“平行世界群体”。
 
@@ -278,6 +280,10 @@ Principal Strata 就是根据个体在面对外部冲击（工具变量 $Z$）�
 可以看到，公式右边的statistical estimand其实就是之前提到的Wald estimand。这种对于Local ATE的非参识别方式还面临着一些问题，比如Monotonicity的假设并不一定总是能够满足等。
 
 ![alt text](problem.png)
+
+Q：为什么叫做LATE
+
+A：因为他求出的效果是在特定假设下专门针对于依从者着一个群体的，在这个群体上干涉产生了什么效果
 
 ### More General Settings for the ATE
 
@@ -658,7 +664,7 @@ Common Support：训练集里包含测试集里可能出现的所有 $x$ 类型�
 - $Y$ 的所有子节点（Children）
 - 所有子节点的其他父节点（Co-parents / 配偶节点）
 
-如果环境不改变，找齐马尔可夫毯就能拿到最高的预测精度和最精简的特征集
+如果环境不改变，找齐马尔可夫毯就能拿到最高的预测精度和最精简的特征集（当给定马尔可夫毯时，$Y$ 与图中所有其他变量都条件独立。）
 
 如果对原图做因果干预，测试集的分布偏移，那么不同干预对应不同测试分布，每一种干预对应一个独立预测任务。根据模块化原理（Modularity），被干预变量的生成机制会改变。一旦后代节点或配偶节点的因果机制被外界干预破坏，在训练集学到的条件概率 $P(y \mid \text{Markov Blanket})$ 在测试集上就会直接崩溃失效。
 
@@ -728,6 +734,9 @@ Pearl & Bareinboim (2014)。
 | **Direct transportability** | 源域和目标域之间的差异 $S$，是不是"够不上"影响 $X\to Y$ 这条机制——如果够不上，源域测出来的数值**直接照搬**给目标域用，**不需要重新计算，不需要目标域的任何额外数据** |
 | **S-admissibility + transport formula** | 当上面两条都不行时，怎么把"源域的实验结果"和"目标域的观测数据"**组合**起来，算出目标域的效应——这是真正意义上的"数据融合（data fusion）" |
 
+直接迁移中的 $X$ ：是一个“分层器”，用来限定“在什么条件下，两个域完全一样”。
+
+$S$-可采纳性中的 $W$：是一个“调整集”，用来“把源域的实验证据，按目标域的分布重新加权”。
 
 ## Chapter 14 Counterfactuals and Mediation
 
@@ -792,7 +801,7 @@ $$
 
 **Population-Level Doesn’t Require a Parametric Model**
 
-群体层面反事实不需要参数模型
+群体层面反事实不需要参数模型。在群体层面，我们关心的是 $E[Y(1)] - E[Y(0)]$。如果我们能通过某种方式，用可观测的群体平均值（比如 $E[Y|T=1] 和 E[Y|T=0]$）来代表这些不可观测的潜在结果均值，问题就解决了。
 
 群体反事实 $\mathbb{E}[Y(t) \mid T=t']$，
 
