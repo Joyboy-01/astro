@@ -20,7 +20,15 @@
           "name": "Haibinlai",
           "intro": "",
           "link": "https://www.haibinlaiblog.top/",
+          "rss": "https://www.haibinlaiblog.top/index.php/feed/",
           "avatar": "https://www.haibinlaiblog.top/wp-content/uploads/2024/08/R-C.jpg"
+        },
+        {
+          "name": "Yong Zhong",
+          "intro": "",
+          "link": "https://optimisticompound.github.io/",
+          "rss": "https://optimisticompound.github.io/feed.xml",
+          "avatar": "https://optimisticompound.github.io/assets/img/profile-480.webp"
         }
       ]
     },

@@ -583,7 +583,7 @@ Complete Graphs Are the Worst Case：完全图里不存在任何 immorality（V 
 
 **Single-Node Interventions**
 
-当系统中有 n 个变量，且我们每次只能选择一个变量进行干预时：$n – 1$ Are Sufficient for $n > 2$
+当系统中有 n 个变量，且我们每次只能选择一个变量进行干预时：$n - 1$ Are Sufficient for $n > 2$
 
 定理 (Eberhardt et al., 2006)：在最坏情况下（即图是一个完整图/满导图，没有任何现成的独立性可以利用），n−1 次干预是完全识别因果图的充分必要条件 。
 
@@ -801,7 +801,7 @@ $$
 
 **Population-Level Doesn’t Require a Parametric Model**
 
-群体层面反事实不需要参数模型。在群体层面，我们关心的是 $E[Y(1)] - E[Y(0)]$。如果我们能通过某种方式，用可观测的群体平均值（比如 $E[Y|T=1] 和 E[Y|T=0]$）来代表这些不可观测的潜在结果均值，问题就解决了。
+群体层面反事实不需要参数模型。在群体层面，我们关心的是 $E[Y(1)] - E[Y(0)]$。如果我们能通过某种方式，用可观测的群体平均值（比如 $E[Y|T=1]$ 和 $E[Y|T=0]$）来代表这些不可观测的潜在结果均值，问题就解决了。
 
 群体反事实 $\mathbb{E}[Y(t) \mid T=t']$，
 
