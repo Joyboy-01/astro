@@ -66,10 +66,14 @@ const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS)
 
     <div id='content' class='animate flex flex-col gap-y-10 md:w-4/5 lg:w-5/6'>
       <Section title='About'>
-        <p class='text-muted-foreground'>A CS Student</p>
         <p class='text-muted-foreground'>
-          我是一个计算机系的大四本科生，即将进入硕士阶段的学习。目前的研究兴趣在分布式学习和多智能体系统方面。
-        </p>
+        I'm a first-year CS grad student at Southern University of Science and Technology (SUSTech). My research interests lie in agentic AI, causal learning, and World Models.<br>
+        <br>
+        I am currently advised by <a href="https://faculty.sustech.edu.cn/georgios/" target="_blank" class="text-primary hover:text-primary/80 underline-offset-4 hover:underline">Prof. Georgios Theodoropoulos</a>, and I'm conducting literature reviews to identify promising research directions.</p>
+
+
+
+
         <Button title='More about me' class='w-fit self-end' href='/about' style='ahead' />
       </Section>
       {
