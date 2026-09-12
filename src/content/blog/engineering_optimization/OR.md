@@ -1,5 +1,5 @@
 ---
-title: engineering optimization method (operations research)(Updating)
+title: engineering optimization method (Updating)
 publishDate: 2026-09-12T20:30:00+08:00
 description: '课程笔记'
 tags:
