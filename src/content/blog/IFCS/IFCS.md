@@ -108,6 +108,75 @@ $$
 
 ###  Leaky Integrate-and-Fire (LIF) Neurons 渗漏积分激发模型
 
+
+
+#### Resistor-Capacitor (RC) circuit model
+
+>Q：为什么把神经元的活动总是比做RC电路呢？
+
+>A：胞内外总有电压差$\rightarrow$电容。胞上离子通道的通过难易度$\rightarrow$电阻。突触信号：电流。但是没办法描述脉冲（fire）
+
+$$I(t)=I_R(t)+I_C(t)=\frac{v(t)}{R}+C\frac{dv(t)}{dt}
+$$
+
+$$
+v'(t)=\frac{1}{C}I(t)-\frac{1}{RC}v(t)
+$$
+$$
+\frac{dv(t)}{dt}=-\frac{v(t)}{\tau}+\frac{v_\infty}{\tau}
+$$
+1. 当膜电位 $v(t) \ge v_{th}$ ($v_{th}$ 发放阈值)，神经元发放脉冲（fire，产生动作电位动作电位）。
+2. 发放后进入不应期（refractory period）：膜电位被重置，此阶段无法再次发放脉冲
+
+$$
+\frac{dv(t)}{dt}\approx\frac{v(t+\Delta t)-v(t)}{\Delta t}
+$$
+
+$$
+v[t] = v[t-1]\left(1-\frac{\Delta t}{\tau}\right) + \frac{\Delta t}{\tau}I[t]
+$$
+可以根据上述公式写出LIF，然后拼几个成为SNN。
+
+#### STDP
+
+SNN权重如何更新：
+权重变化完全看两个神经元脉冲的先后顺序 & 时间差
+
+1. 前神经元先放、后神经元后放（Pre $\rightarrow$ Post）是因果正确（输入激活了输出）$\rightarrow$ 权重增强（LTP）
+2. 后神经元先放、前神经元后放（Post $\rightarrow$ Pre）
+无因果、乱同步
+$\rightarrow$ 权重减弱（LTD）
+
+> Q：SNN和NN的区别是什么
+
+> A：持续积累变化（时间维度），到达阈值才启动（稀疏）。SNN使用STDP更新权重
 ### Brain
 
+- The brain includes the cerebrum (大脑), cerebellum (小脑), brainstem (脑干), and diencephalon (间脑).
+- The cerebrum has two hemispheres (大脑半球). Each has four lobes (脑叶): frontal (额叶), parietal (顶叶), temporal (颞叶), and occipital (枕叶)
+- 大脑皮层由灰质（gray matter）构成，负责高级脑功能，有沟回，神经元数量百亿级别，哺乳动物特有新皮层（neocortex）由外到内分为6层
 
+**一张重要的图片**
+
+![Cortical Lobes](CorticalLobes.png)
+
+| 脑叶（英文） | 核心功能 |
+| --- | --- |
+| 额叶（frontal lobe） | 高级认知：学习、语言、决策、抽象思维、情绪 |
+| 顶叶（parietal lobe） | 躯体感觉（somatosensation）；整合空间、视觉、身体信息 |
+| 颞叶（temporal lobe） | 听觉、嗅觉、高级视觉加工、左右分辨、长期记忆（long‑term memory） |
+| 枕叶（occipital lobe） | 视觉处理（visual processing） |
+
+重要解剖沟：中央沟（Central sulcus）、外侧沟（Lateral sulcus）、顶枕沟（Parieto‑occipital sulcus）、枕前切迹（Preoccipital notch）
+
+- 布罗德曼分区（Brodmann Areas）K. Brodmann，依据脑组织染色后的神经元组织形态，把大脑皮层划分52 个区域。皮层三大功能分区：
+    1. 感觉皮层（sensory cortex）
+    2. 运动皮层（motor cortex）
+    3. 联合皮层（association cortex）
+
+- 皮层电活动（Electrical Activity of the Cortex）：皮层神经元持续产生节律性电压波动，称为自发脑电活动（spontaneous brain electrical activity），即脑电波（brain waves）。按频率划分四类脑波（慢波振幅大，快波振幅小）：
+
+    1. δ 波（Delta）：0.5‑3 Hz
+    2. θ 波（Theta）：4‑7 Hz
+    3. α 波（Alpha）：8‑13 Hz
+    4. β 波（Beta）：＞14 Hz
