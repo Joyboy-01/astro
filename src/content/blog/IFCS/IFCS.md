@@ -95,7 +95,7 @@ $$
 
 ### Resting Membrane Potential & Action Potential
 
-#### Resting Membrane Potential 
+#### Resting Membrane Potential  静息电位
 
 静息膜电位约 −70 mV，膜内电位相对于膜外为负。膜外 Na⁺、Cl⁻浓度更高；膜内 K⁺浓度更高。
 
@@ -106,8 +106,64 @@ $$
 - 英国生理学家 A. L. 霍奇金（A. L. Hodgkin）与 A. F. 赫胥黎（A. F. Huxley）将玻璃微电极（glass microelectrodes）插入乌贼巨轴突（squid giant axons），记录细胞内部的膜电位。（后续二人建立霍奇金‑赫胥黎数学模获得诺奖）
 - 电压钳（Voltage clamp）技术：HH 实验操作，向神经元（轴突，axon）内部注入电流（current），观察膜电位相对于静息电位（约‑70 mV）如何发生变化。
 
+细胞膜可以近似等效为电容与电阻并联
+- 电容 $C$：在膜两侧储存电荷
+- 电阻 $R$：代表离子跨膜漏电流
+- 输入电流 $I(t)$：外部注入电流
+
+$$
+I(t)=I_C(t)+I_R(t) = \frac{dQ}{dt} + \frac{V}{R} = C\frac{dV}{dt} + \frac{V}{R}
+$$
+
+$$
+RC\frac{dV}{dt}=IR-V
+$$
+
+$$
+\frac{dV}{dt}=-\frac{V}{RC}+\frac{I}{C}
+$$
+
+注入恒定电流，电压不变，膜电位最终趋近的稳定电压 $\boldsymbol{V_\infty=I_0R}$
+
+定义膜时间常数 $\boldsymbol{\tau=RC}$
+
+$$
+\frac{dV}{dt}=-\frac{V}{\tau}+\frac{V_\infty}{\tau}
+$$
+
+$$
+\boldsymbol{\frac{dV}{dt}=\frac{V_\infty-V}{\tau}}
+$$
+
+电压变化速率和当前电压距离稳态值的差值成正比
+
+$$
+V(t)=V_\infty+\big(V(0)-V_\infty\big)e^{-t/\tau}
+$$
+
+$\tau$ 的意义：当时间等于 \($\tau$\)，电位完成从起点到稳态总变化量的 63.2%。
+![Hodgkin–Huxley](Hodgkin–Huxley.png)
+
+#### Action Potential 动作电位
+
+膜内电压高于膜外，触发动作电位需要刺激强度超过阈值电位，一旦超过，动作电位迅速达到顶峰，然后返回静息电位
+
+![Action Potential](ActionPotential.png)
+
+- Propagation（传导）：在某一区域，刺激引发膜电位发生快速反转。该区域相当于电池，使邻近细胞膜电位上升至阈电位以上，从而触发新的动作电位。动作电位可远距离不衰减传导（without decrement）
+
 ###  Leaky Integrate-and-Fire (LIF) Neurons 渗漏积分激发模型
 
+#### Neuromorphic Computing 神经形态计算（类脑计算）
+
+- 设计模仿生物神经系统(biological nervous systems)信息处理方式的计算系统。
+- 主流范式：神经元维持内部状态，通过脉冲（spike）通信，并依靠带权重的突触完成相互作用。
+- 脉冲神经网络（Spiking neural networks, SNN）：可在软件中运行，也可部署在专用硬件上。
+- 一套简单规则决定神经元什么时候发放脉冲。神经元接收突触前神经元的脉冲信号时，会不断累积势能（膜电位）。当该势能超过阈值，神经元就发放脉冲
+
+#### LIF Neurons
+
+突触后神经元对来自所有突触前神经元的输入做累加（积分），但该电位值会随时间衰减（渗漏）。如果输入累加总和达到最低阈值，神经元就发放脉冲。（A Leaky Bucket Analogy：累加的越多，衰减的越快）
+
+
 ### Brain
-
-
