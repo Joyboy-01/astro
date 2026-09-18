@@ -311,6 +311,8 @@ $$
 
 >性质：基变量在目标行($z$ 行)系数为 $0$ （**检验数= 0**）；约束行中基变量部分构成单位矩阵 $I$。$B^{-1} b$ 直接算出基变量取值
 
+![alt text](simplex1.jpeg)
+
 #### 单纯形表中的逆矩阵
 
 变量拆分 $ x=\begin{bmatrix} x_{N_0}\\ x_{B_0}\end{bmatrix},\ A=\begin{bmatrix}N_0 & I\end{bmatrix},\  c=\begin{bmatrix} c_{N_0}\\ 0\end{bmatrix}$
@@ -336,6 +338,7 @@ $$
 
 当 $ c_B^\mathrm T B^{-1}N- c_N^\mathrm T \ge  0$（全部非基变量检验数 $\ge 0$），此时这套表格才是最优单纯形表，此时 $B=B^*$（最优基）。
 
+![alt text](simplex2.jpeg)
 
 > 补充单纯形法相关定理（证明见附录“单纯形法相关定理证明”）
 > 1. 线性规划基本定理：最优一定出现在顶点（基可行解），单纯形只搜索顶点是合理。
@@ -344,6 +347,56 @@ $$
 
 
 ### Sensitivity analysis
+
+### Sensitivity analysis
+
+敏感性分析（Sensitivity Analysis）研究的是：当线性规划模型中的参数发生变化时，原来的最优解、最优基和最优目标值会如何变化。其核心思想不是重新求解整个线性规划，而是判断当前的 optimal basis 在参数变化后是否仍然有效。
+
+对于标准形式
+$$
+\max \; c^T x,\qquad Ax\le b,\qquad x\ge 0,
+$$
+敏感性分析主要关注两类参数：约束右端项 $b$ 和目标函数系数 $c$。
+
+当 $b$ 变化时，表示资源数量发生变化，因此可行域会发生移动，(还在同一份直线)。若当前基矩阵为 $B$，则基本变量满足
+$$
+x_B=B^{-1}b.
+$$
+当 $b$ 变为 $b+\Delta b$ 时，
+$$
+x_B'=B^{-1}(b+\Delta b).
+$$
+只要 $x_B'\ge 0$，当前基仍然可行，因此不需要更换 basis。
+
+资源 $b_i$ 每增加一个单位所引起的最优目标值变化称为 **shadow price（影子价格）**。若
+$$
+y^T=c_B^TB^{-1},
+$$
+则
+$$
+y_i=\frac{\partial z^*}{\partial b_i}.
+$$
+因此 $y_i$ 可以理解为第 $i$ 种资源的边际价值。但是 shadow price 只在当前 optimal basis 不发生变化的范围内有效，超过允许范围后需要重新确定最优基。
+
+当目标函数系数 $c$ 变化时，可行域不变，但目标函数直线的方向(斜率)会改变。此时主要判断当前 basis 是否仍然满足最优性条件。对于非基变量 $x_j$，其 reduced cost 为
+$$
+\bar c_j=c_j-c_B^TB^{-1}A_j.
+$$
+对于最大化问题，在这种定义下，如果所有非基变量满足
+$$
+\bar c_j\le 0,
+$$
+则当前 basis 仍然最优。若某个 reduced cost 变为 \(0\)，通常对应 alternative optima 的临界情况；若继续变化使其大于 \(0\)，则该变量可以进基，原来的 optimal basis 将发生改变。
+
+因此可以概括为：
+$$
+\boxed{
+b\text{ 变化：检查 feasibility},\qquad
+c\text{ 变化：检查 optimality}.
+}
+$$
+
+敏感性分析的本质可以理解为：研究当前最优 basis 在参数变化时能够保持有效的范围。在线性规划中，最优目标值通常关于参数呈现分段线性（piecewise linear）的变化。
 
 ### application
 
