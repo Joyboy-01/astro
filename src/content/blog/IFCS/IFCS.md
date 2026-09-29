@@ -503,3 +503,402 @@ Gaze-VLM 使用人类 gaze heatmap 指导模型学习图像 patch 的注意分�
 > Q：人类大脑的注意力和我们计算机算的attention矩阵有哪些区别，根据这节课的内容来回答
 
 > A：人类的注意力并不一定代表着和当前任务相关，而是大脑决定什么应该信息应该接收，并且什么信息应该在现在处理，当我们处理信息的时候，人类才能主管上感知到注意力被吸引。所以人类的注意力更像是多种信息来源，每种信息的阈值不同，比如自己专注事情上的激活阈值就低，其他的会提高，只要达到阈值就被注意。大脑更像是一个优先系统，优先级由很多种因素决定。而attention矩阵似乎都是一样的阈值。
+
+## Vision
+
+视觉系统从视网膜接收到二维光信号，然后逐层提取颜色、边缘、形状、运动、深度等信息，最后形成对物体和空间的表征。
+
+### Physiological Basis of Vision 视觉的生理基础
+
+外界物体反射的光进入眼球并聚焦在视网膜（retina）上，视网膜将光信号转换为神经信号，再通过视神经传递到大脑视觉皮层。
+
+大致的信息流：
+
+$$
+\text{Light}
+\rightarrow
+\text{Retina}
+\rightarrow
+\text{Optic Nerve}
+\rightarrow
+\text{Optic Chiasm}
+\rightarrow
+\text{LGN}
+\rightarrow
+\text{V1}
+$$
+![alt text](vision/visual_cortex.png)
+
+#### Retina 视网膜
+
+视网膜（retina）实际上属于中枢神经系统的一部分，主要可以理解成三级神经元：
+
+1. 光感受器（photoreceptors）
+   * 视杆细胞（rod）
+   * 视锥细胞（cone）
+2. 双极细胞（bipolar cell）
+3. 神经节细胞（ganglion cell）
+
+神经节细胞的轴突汇集形成视神经（optic nerve）。
+
+* Rod：
+  * 数量约 $1.2\times10^8$
+  * 对弱光非常敏感
+  * 主要负责暗视觉
+  * 基本不能区分颜色
+
+* Cone：
+  * 数量约 $6\times10^6$
+  * 需要较强光线
+  * 可以感知颜色
+  * 负责高空间分辨率视觉
+  * 大量集中在中央凹（fovea）
+
+* ganglion 数量相比数量少的多
+
+中央凹（fovea）区域 cone 密度最高，因此我们注视某个物体时，会主动移动眼睛，让目标落在中央凹附近，从而获得最清晰的视觉。
+
+#### Visual Pathway 视觉神经通路
+
+左右眼的视神经在视交叉（optic chiasm）处发生部分交叉：
+
+* 鼻侧视网膜（nasal retina）的神经纤维交叉到对侧
+* 颞侧视网膜（temporal retina）的神经纤维保持在同侧
+
+因此：
+
+* 右半视野 $\rightarrow$ 左半球
+* 左半视野 $\rightarrow$ 右半球
+
+之后信号进入丘脑中的外侧膝状体（Lateral Geniculate Nucleus, LGN）。
+
+LGN：
+
+* 一共有 6 层
+* 是视觉信号从 retina 到 cortex 的重要中继站
+* 保持视觉空间的拓扑关系（retinotopy）
+* 随后通过 optic radiation 将信号传递到 V1
+
+视觉系统之后大致分成两个通路：
+
+* Ventral pathway 腹侧通路：“What”
+  * $V1\rightarrow V2\rightarrow V4\rightarrow IT (Inferotemporal cortex, 颞下皮层)$
+  * 物体是什么
+  * 形状、颜色、物体识别
+
+* Dorsal pathway 背侧通路：“Where / How”
+  * $V1\rightarrow V2/V3\rightarrow MT\rightarrow Parietal$
+  * 物体在哪里、如何运动
+  * 空间位置、运动以及视觉引导的行为
+
+### Visual Cortex 视觉皮层
+
+视觉皮层主要位于枕叶（occipital lobe）。
+
+直接从 LGN 接收大量视觉输入的是初级视觉皮层（Primary Visual Cortex, V1）。
+
+
+视觉信息随后经过：
+
+$$
+V1\rightarrow V2\rightarrow V3/V4/V5/V6
+$$
+
+不同区域逐渐处理更加复杂的视觉特征。
+
+粗略而言：
+
+* V1/V2：边缘、方向、颜色、局部运动等基本特征
+* V3：形状和动态信息
+* V4：颜色、形状等，与物体识别密切相关
+* V5/MT：运动信息
+* 更高级区域：复杂物体、脸、空间关系等
+
+#### Receptive Field 感受野
+
+一个视觉神经元只对视觉空间中的某一部分刺激产生响应，这个区域称为感受野（receptive field）。
+
+Hubel 和 Wiesel 对猫和猴视觉皮层的研究发现，不同视觉神经元具有不同的 feature selectivity。
+
+例如神经元可能只对：
+
+* 特定方向（orientation）
+* 特定空间频率（spatial frequency）
+* 特定运动速度（velocity）
+* 双眼视差（binocular disparity）
+* 特定颜色
+
+产生强烈响应。
+
+#### Simple Cell & Complex Cell
+
+V1 中的 simple cell 主要响应特定位置、特定方向的边缘或条纹。其感受野可以近似用 Gabor filter 表示。
+
+Complex cell 同样具有 orientation selectivity，但是对刺激的精确位置没有那么敏感。
+
+从这里已经可以看到一种层级结构：
+
+$$
+\text{Pixel}
+\rightarrow
+\text{Edge}
+\rightarrow
+\text{Shape}
+\rightarrow
+\text{Object}
+$$
+
+这也是后来 CNN 的重要生物学启发之一。
+
+#### V1 Saliency Hypothesis
+
+V1 Saliency Hypothesis（V1SH）认为 V1 不仅提取局部特征，还可能通过神经元之间的相互作用形成一个 bottom-up saliency map，用来告诉系统哪里最值得注意？
+
+核心机制之一是 iso-feature suppression。
+
+假如大量邻近神经元都响应相同方向，它们之间会发生较强的相互抑制。如果突然出现一个不同方向，对应位置的神经元受到的同特征抑制较少，因此响应相对突出。
+
+于是：
+
+$$
+\text{unique feature}
+\rightarrow
+\text{large relative neural response}
+\rightarrow
+\text{high saliency}
+$$
+
+高 saliency 的位置随后可以吸引注意力或者眼球注视。
+
+> V1 创建 saliency map 是一个理论假说，而不是说 saliency 是 V1 唯一或者已经完全确定的功能。
+
+#### Visual Search
+
+Visual Search 实验中要求被试从 distractors 中找到 target。
+
+衡量搜索效率的一个常用方法：
+
+$$
+RT=a+bN
+$$
+
+其中：
+
+* $RT$：reaction time
+* $N$：distractor 数量
+* $b$：搜索曲线斜率
+
+$b$ 越大，说明 distractor 增加以后反应时间增长得越快，搜索越困难。
+
+##### Feature Search
+
+如果 target 在某一个基本特征上与其他物体不同，例如：
+
+* 一个红色点在绿色点中
+* 一条斜线在竖线中
+
+target 通常会发生 pop-out。搜索时间受 distractor 数量影响较小。
+
+##### Conjunction Search
+
+如果 target 需要结合多个特征才能确定，例如：
+
+> 找“红色竖线”，但背景里同时存在红色横线和绿色竖线。
+
+此时单一特征无法直接定位目标，需要进行更多特征结合，因此通常搜索更困难。
+
+另外视觉搜索还有：
+
+* background homogeneity effect：背景越一致，异常目标越容易突出
+* visual search asymmetry：A 在 B 中好找，并不意味着 B 在 A 中同样好找
+
+### Color Theory 颜色理论
+
+颜色可以分成：
+
+* 非彩色：白、灰、黑
+* 彩色：黑白灰之外的颜色
+
+彩色有三个基本属性：
+
+1. Hue 色调 / 色相
+2. Brightness 明度
+3. Saturation 饱和度,单一波长的光通常具有很高的饱和度；向颜色中不断加入白光，饱和度会降低。
+
+#### RGB & CMYK
+
+RGB 是加色模型（additive color model）：
+
+$$
+R+G+B
+$$
+
+不同颜色的光叠加形成新的颜色。
+
+主要用于：
+
+* 屏幕
+* 显示器
+* 摄像和数字图像
+
+CMYK 是减色模型（subtractive color model）：
+
+* Cyan
+* Magenta
+* Yellow
+* Key / Black
+
+颜料通过吸收白光中的一部分波长产生颜色，因此主要用于印刷。
+
+### Marr's Theory 马尔的视觉计算理论
+
+Marr 认为视觉不是直接从 image 一步得到 object，而是经过一系列中间 representation：
+
+$$
+\text{Image}
+\rightarrow
+\text{Primal Sketch}
+\rightarrow
+\text{2.5D Sketch}
+\rightarrow
+\text{3D Model}
+$$
+
+#### Primal Sketch 初始简图
+
+从原始图像中提取基本结构：
+
+* edge
+* line
+* region
+* intensity change
+
+#### 2.5D Sketch
+
+在 primal sketch 的基础上加入深度和表面信息：
+
+* surface orientation
+* distance
+* binocular disparity
+* texture
+* illumination
+* depth
+
+之所以叫 2.5D，是因为已经加入了 depth，但还没有形成完整、视角无关的 3D object representation。
+
+#### 3D Model
+
+最后形成更加稳定的 object-centered representation。
+
+目标是让一个物体即使发生：
+
+* viewpoint change
+* rotation
+* position change
+
+仍然能够被识别为同一个物体。
+
+### Topological Theory 拓扑视觉理论
+
+视觉研究中长期存在两种思路：
+
+* Atomism 原子论
+* Holism 整体论
+
+Atomism：先处理局部特征，再组合成整体。Marr 的理论基本属于这一类。
+
+Holism：某些整体性质可能在非常早的视觉阶段就已经被检测出来，而不一定需要先完成所有局部分析。陈霖提出的“拓扑性质初期知觉”假说属于这一方向。
+
+#### Topological Property 拓扑性质
+
+拓扑学关心的是：一个图形在连续拉伸、扭曲、弯曲之后，哪些性质保持不变？在这种变换下仍然保持不变的性质包括：
+
+* connectivity 连通性
+* number of holes 洞的数量
+* inside / outside 包含关系
+* adjacency 邻接关系
+
+例如圆和正方形可以通过连续变形互相得到：它们都有一个连通分量,没有洞因此拓扑结构相同。
+
+#### Early Topological Perception
+
+关键问题：我们是先看到局部形状，再得到拓扑结构；还是拓扑结构本身就可以被非常早地检测？
+
+实验结果被用来支持：
+
+$$
+\text{Topological Difference}
+\rightarrow
+\text{can be detected very early}
+$$
+
+> Q：为什么“整体”的拓扑性质反而可能比局部形状更早？
+
+> A：这里的整体并不等于“先把所有局部特征算完再拼起来”。连通、洞等拓扑性质可能由视觉系统中的另一类快速机制直接检测，因此 global property 不一定必须建立在完整 local geometry 之后。
+
+### Convolutional Neural Networks
+
+CNN 是计算机视觉中经典的层级视觉模型。
+
+从传统 computer vision 的角度可以把视觉任务分成：
+
+1. Visual foundations
+2. Low-level processing
+3. Mid-level processing
+4. High-level processing
+
+常见结构规律：
+
+* 前面：convolution，提取空间特征
+* 中间：逐层形成越来越复杂的 representation
+* 后面：fully connected / classifier，完成具体任务
+
+具体内容可以见课件/深度学习笔记
+
+### ConvNets and Visual Systems
+
+CNN 不只是工程模型，也可以作为 biological visual system 的 computational model。
+
+Yamins & DiCarlo 的工作比较了 CNN internal representation 和 monkey visual cortex neural response结果发现一种层级对应关系：
+
+* CNN intermediate layers 对 V4 neural response 的预测较好
+* CNN later layers 对 IT（inferior temporal cortex）neural response 的预测较好
+
+在 object classification 上表现更好的模型，其内部 representation 往往也能更好地预测 IT neural response。说明 task optimization learn to recognize objects，可能自然地产生一些与生物高级视觉系统相似的 representation。
+
+#### RDM
+Representational Dissimilarity Matrix（RDM）不直接比较单个 neuron 和单个 artificial unit，而是比较整个 representation 的几何结构。
+
+Representational Similarity Analysis (RSA) 两个系统面对同一批图片时，它们是以多相似的方式组织这些图片的？
+
+对于两个 stimuli $i,j$：
+
+$$
+RDM_{ij} = d(r_i,r_j) =  1 − PearsonCorr(r_i, r_j)
+$$
+
+$$
+\text{RSA score}
+=
+\operatorname{SpearmanCorr}
+\left(
+\operatorname{upper}(D^A),
+\operatorname{upper}(D^B)
+\right)
+$$
+
+$r_i,r_j$ 是系统看到两幅图像之后产生的 representation。
+
+如果两个系统具有类似的 RDM：哪些图片被认为相似、哪些被认为不同，这种整体关系结构比较一致。
+
+因此可以比较：
+
+* CNN layer
+* human V1-V3
+* human IT
+
+之间 representation structure 的相似程度。
+
+> Q：CNN 和 visual cortex 有对应关系，是不是对应大脑的大部分真实机制？
+
+> A：不是。这里说明的是 representation 和 hierarchy 存在一定相似性。CNN 是一个可以用来解释部分神经响应的 computational model，但真实视觉系统存在大量 recurrent connections、feedback、attention、眼球运动以及更复杂的生物神经机制。
