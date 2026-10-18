@@ -902,3 +902,978 @@ $r_i,r_j$ 是系统看到两幅图像之后产生的 representation。
 > Q：CNN 和 visual cortex 有对应关系，是不是对应大脑的大部分真实机制？
 
 > A：不是。这里说明的是 representation 和 hierarchy 存在一定相似性。CNN 是一个可以用来解释部分神经响应的 computational model，但真实视觉系统存在大量 recurrent connections、feedback、attention、眼球运动以及更复杂的生物神经机制。
+
+## Auditory and Speech Systems
+
+这一节从两个层面讨论声音：听觉系统如何把声波变成神经信号，以及我们如何从声音中识别语言、理解意义并产生言语。
+
+### Auditory Sensory System 听觉系统
+
+#### The Auditory Process 听觉形成过程
+
+听觉不是声音直接进入大脑，而是经历机械振动 mechanical motion、电信号 electrical changes、化学传递 chemical transmission 神经冲动 neural impulses和中枢加工 central processing：
+ 
+$$
+\text{Sound}
+\rightarrow\text{Outer Ear}
+\rightarrow\text{Middle Ear}
+\rightarrow\text{Cochlea}
+\rightarrow\text{Auditory Nerve}
+\rightarrow\text{Auditory Pathways}
+\rightarrow\text{Auditory Cortex}
+$$
+
+![Auditory System 耳部结构](auditory/ear_anatomy.png)
+
+* Outer ear 外耳：收集声波，经外耳道传到鼓膜（tympanic membrane）。
+* Middle ear 中耳：鼓膜振动带动三块听小骨：
+  * Malleus 锤骨
+  * Incus 砧骨
+  * Stapes 镫骨
+* Cochlea 耳蜗：内部充满液体，传入的振动引起液体和基底膜（basilar membrane）运动。
+* Hair cells 毛细胞：静纤毛（stereocilia）发生偏转，将机械运动转换成细胞的电变化，再通过释放神经递质激活听神经纤维。
+* Auditory nerve 听神经：把神经冲动传入中枢，经过听觉通路到达听觉皮层。
+
+可以把前面的过程理解成：
+
+$$
+\text{机械振动}
+\rightarrow\text{毛细胞电变化}
+\rightarrow\text{递质释放}
+\rightarrow\text{听神经脉冲}
+\rightarrow\text{中枢加工}
+$$
+
+cochlear nerve（耳蜗神经）主要传递听觉信息；vestibular nerve（前庭神经）主要与平衡有关。
+
+#### Hearing Frequency Range 听觉频率范围
+
+人类通常能听到约 $20$–$20{,}000\ \mathrm{Hz}$ 的声音，不同物种的范围不同。
+
+| 物种 | 听觉频率范围 / 上限 |
+| --- | --- |
+| Human | 约 20 Hz–20 kHz |
+| Dog / cat | 低频下限相近，高频上限可到约 65 kHz |
+| Bat | 高频上限可到约 200 kHz |
+| Beluga whale 白鲸 | 约 1–123 kHz |
+| Bottlenose dolphin 宽吻海豚 | 约 150 Hz–150 kHz |
+
+听不听得到，不只取决于 frequency，也取决于 intensity。同一个频率的声音太弱时仍然听不到，因此听觉范围需要放到“频率 × 强度”的平面里理解。
+
+### Sound Pressure and Loudness 声压与响度
+
+Measures of sound intensity
+
+#### Sound Pressure Level 声压级
+
+Sound Pressure Level（SPL）是**客观物理量**，用参考声压的对数比值表示：
+
+$$
+L_p=20\log_{10}\left(\frac{p_{\mathrm{rms}}}{p_0}\right)\ \mathrm{dB}
+$$
+
+* $p_{\mathrm{rms}}$：有效声压 / 均方根声压
+* $p_0=20\ \mu\mathrm{Pa}=2\times10^{-5}\ \mathrm{Pa}$：空气中的标准参考声压
+* dB：decibel，分贝
+
+非常安静的房间约 20–30 dB SPL；1 m 处的正常交谈约 40–60 dB SPL。
+
+由公式可知，声压变成原来的 10 倍，SPL 增加 20 dB；声压变成 2 倍，SPL 约增加 6 dB。
+
+> Q：0 dB SPL 是完全没有声音吗？
+>
+> A：不是。它表示有效声压等于参考声压 $p_0$。分贝表示的是相对于参考值的比值，而不是“声音存在 / 不存在”。
+
+#### Weber's Law in Hearing
+
+前面的 Weber 定律同样适用于听觉中的差别阈限：
+
+$$
+\frac{\Delta I}{I}=k
+$$
+
+例：在指定的初始刺激和实验条件下，pitch（2,000 Hz）的 Weber fraction 约为 $1/333$，loudness（100 phon，1,000 Hz）约为 $1/11$。
+
+这些值强调的是不同感觉属性具有不同的辨别敏感度，不能脱离刺激条件，把某个 $k$ 当作适用于所有声音的固定常数。
+
+#### Loudness & Equal-loudness Contours
+
+Loudness（响度）是**主观感受**，SPL 是客观声压级。相同 SPL 的两个声音，如果频率不同，听起来不一定一样响。
+
+Equal-loudness contours（等响度曲线）把“听起来一样响”的不同频率和 SPL 组合连接起来。
+
+![Equal-loudness Contours 等响度曲线](auditory/equal_loudness.png)
+
+* 横轴：frequency
+* 纵轴：SPL，单位 dB
+* 同一条曲线上的点：主观响度相同
+* 曲线低的位置：达到该响度所需的声压较小，耳朵对该频段更敏感
+
+例如低频声音通常需要更高的 SPL，才能听起来与中频声音一样响。
+
+#### Loudness Level 响度级
+
+响度级的单位是 phon，用 1,000 Hz 的参考纯音定义：
+
+> 如果一个声音听起来与 1,000 Hz、$x$ dB SPL 的纯音一样响，那么它的响度级就是 $x$ phon。
+
+因此：
+
+* 对 1,000 Hz 的纯音，phon 数值与 dB SPL 数值相同。
+* 对其他频率，需要通过等响度曲线找到对应的 dB SPL。
+
+> Q：40 phon 就是 40 dB SPL 吗？
+>
+> A：对 1,000 Hz 的参考纯音成立。换成其他频率，达到 40 phon 所需的 SPL 可能不同。
+
+### Auditory Cortex 听觉皮层
+
+听觉皮层主要位于 temporal lobe（颞叶），包括：
+
+1. Primary auditory cortex 初级听觉皮层，A1
+2. Secondary auditory cortex 次级听觉皮层，A2
+3. Auditory association areas 听觉联合区
+
+它们分析来自耳蜗信号中的时间和频率结构。神经元按照偏好的频率呈现有序分布，这种组织方式称为 tonotopy（音调拓扑组织 / 频率拓扑映射）。
+
+可以和前面视觉系统中的 retinotopy 类比：视觉保留视野位置的组织关系，听觉则保留频率的组织关系。
+
+A1 也不只是对某一个孤立频率作出反应，还参与编码更复杂的声音特征。
+
+### Speech Perception & production
+
+#### Ellis & Young Model 口语通路模型
+
+Ellis & Young（1988）用多个功能模块描述 spoken word perception and production。这里讨论的是从听到单词到识别、理解和复述的认知加工通路。
+
+![Ellis & Young Model 口语加工的三条通路](auditory/ellis_young.png)
+
+#### Functional Modules
+
+| 模块 | 作用 |
+| --- | --- |
+| Auditory analysis system 听觉分析系统 | 提取声学特征和音位信息 |
+| Auditory input lexicon 听觉输入词典 | 判断是否为熟悉的口语词形 |
+| Semantic system 语义系统 | 提供词的意义 |
+| Speech output lexicon 言语输出词典 | 提供已存储的口语输出形式 |
+| Phoneme level 音素反应缓冲器 | 暂时保持说出声音所需的信息 |
+
+Phoneme（音位）是能够区分词义的最小语音单位。课件用普通话不送气的 /p/（如“爸”）与送气的 /pʰ/（如“怕”）说明：这种语音差异可以区分词义。phoneme 严格说是“音位”，phone 是实际发出的“音素”。
+
+Semantic system 是功能层面的抽象，不要求大脑中存在一个独立、集中的“词义盒子”。它也可能由分布式表征实现，可以类比 semantic embeddings。
+
+#### Three Routes for Spoken Repetition
+
+##### Route 1: Semantic Route 语义通路
+
+听觉分析 $\rightarrow$ 听觉输入词典 $\rightarrow$ 语义系统 $\rightarrow$ 言语输出词典 $\rightarrow$ 音素缓冲器 $\rightarrow$ 说出。
+
+识别词形、理解意义，再提取输出形式。它是经过 meaning 的复述路径。
+
+##### Route 2: Lexical Route 词汇通路
+
+听觉分析 $\rightarrow$ 听觉输入词典 $\rightarrow$ 言语输出词典 $\rightarrow$ 音素缓冲器 $\rightarrow$ 说出。
+
+熟悉的口语词形可以直接连接到输出，不一定需要访问词义。
+
+##### Route 3: Nonlexical Route 非词汇通路
+
+听觉分析 $\rightarrow$ 音素缓冲器 $\rightarrow$ 说出。
+
+绕过词典与语义系统，因此可以复述陌生词或 nonwords（非词 / 无意义的语音组合）。
+
+#### Word Meaning Deafness 词义性耳聋
+
+患者听到词后理解意义受损，但复述可能保留。这说明：
+
+$$
+\text{能够复述}\not\Rightarrow\text{已经理解}
+$$
+
+> Q：为什么不理解一个词，还能把它说出来？
+>
+> A：复述可以通过不访问语义的 Route 2，或直接进行语音转换的 Route 3。因此“听清声音”“识别熟悉词形”“理解意义”“说出来”并不是同一个功能。
+
+### Articulatory Phonetics 发音语音学
+
+Articulatory phonetics 研究口腔、咽喉和鼻腔中的发音器官，如何改变来自肺部的气流以产生语音。
+
+#### Voiced & Unvoiced Sounds 清浊音
+
+* Voiced sounds 浊音：声带（vocal folds / cords）振动，例如 [b]、[d]、[g]。
+* Unvoiced / voiceless sounds 清音：声带不振动，例如 [p]、[t]、[k]。
+
+声带靠近并在气流作用下周期性振动，是浊音声源的重要来源；声带张开、没有这种振动时，可以产生清音。这里的 [b]、[p] 等是语音符号，不能直接等同于汉语拼音字母。前面普通话“爸 / 怕”的例子区分的是送气，不是简单的清音与浊音。
+
+#### Consonants & Vowels 辅音与元音
+
+* Consonants 辅音：气流在声道某处受到明显阻碍或封闭，可以是清音，也可以是浊音。
+* Vowels 元音：气流受到的阻碍较小，通常是浊音，相比辅音往往更响、持续时间更长。
+
+不同的舌位和发音部位会改变声道形状，从而产生不同语音。
+
+#### Vowel Space 元音空间
+
+元音可以根据舌头的大致位置组织成一个空间：
+
+* High / low：舌位高低
+* Front / back：舌位前后
+* 图中的路径：发音过程中舌位发生变化，例如 diphthongs（双元音）
+
+![English Vowel Space 英语元音空间](auditory/vowel_space.png)
+
+#### Syllables 音节
+
+辅音和元音可以组合成 syllable（音节），通常围绕一个元音或其他可充当音节核的响音组织：
+
+$$
+\text{Syllable}=\text{Onset}+\text{Rime}
+$$
+
+$$
+\text{Rime}=\text{Nucleus}+\text{Coda}
+$$
+
+* Onset 首音：音节开头的辅音，可以缺省
+* Nucleus 核音：音节中心，通常是元音
+* Coda 尾音：音节末尾的辅音，可以缺省
+* Rime 韵：核音与尾音的组合
+
+例如 dog 是一个音节，/d/ 是 onset，中间元音是 nucleus，/g/ 是 coda。Catnip 则包含 cat 和 nip 两个音节。
+
+### Prosody 韵律学
+
+Prosody 关注语调、节奏等跨越单个音素的结构。主要涉及：
+
+1. Fundamental frequency 基频，$F_0$ 和音高有关
+2. Energy 能量 和向度有关
+3. Duration 时长
+
+这些变化可以传达情绪、语用意图和对话结构。说了哪些词相同，并不意味着表达的重点和态度相同。
+
+#### Prosodic Prominence 韵律突显
+
+* Pitch accent 音高重音：通过音高变化突出某个词或音节。
+* Lexical stress 词汇重音：词内部音节的重音结构，pitch accent 通常落在能够承载重音的音节上。
+* Vowel reduction 元音弱化：非重读位置的元音可能弱化成 schwa /ə/（央元音）。
+
+词汇重音和句子里的突出位置属于不同层次：一个词有自身的重音模式，但它在当前句子里是否被重点强调，还取决于语境。
+
+#### Intonation 语调
+
+Intonation 是 $F_0$ 随时间的升降模式。
+
+* 句尾 $F_0$ 上升：课件中用于说明英语 yes–no question 的 question rise
+* 句尾 $F_0$ 下降：课件中用于说明 statement 的 final fall
+
+这是一种典型例子，具体语调仍取决于语言和语境，不能把所有问句都等同于升调。
+
+### Basics of Speech Signal Processing
+
+#### Waveform 波形
+
+一个简单的正弦波：
+
+$$
+y(t)=A\sin(2\pi ft)
+$$
+
+* $A$：amplitude，振幅
+* $f$：frequency，频率，每秒振动的周期数，单位 Hz
+* $t$：time
+
+Waveform 用时间作横轴，记录声压相对于平衡值的变化。正值对应 compression（压缩），负值对应 rarefaction（稀疏）。真实语音波形通常不是单一正弦波。浊音常呈现近似周期性，而辅音中的闭塞和爆破也会留下不同的波形结构。
+
+#### Sampling 采样
+
+Analog-to-digital conversion（模数转换）包含两个主要步骤：sampling 和 quantization。
+
+Sampling rate $f_s$ 表示每秒记录多少个采样点。Nyquist frequency（奈奎斯特频率：对于均匀采样的带限信号，能够保证无混叠重建的最高频率界限）为：
+
+$$
+f_N=\frac{f_s}{2}
+$$
+
+为了避免 aliasing（混叠），输入中需要保留的最高频率应低于 $f_s/2$ 即采样率要大于声音频率的两倍，因此通常写成：
+
+$$
+f_s>2f_{\max}
+$$
+
+课件用语音信息主要位于 10 kHz 以下作估算，因此对应约 20 kHz 的理论最低采样率；实际系统还需要给滤波留出余量。
+
+* Traditional landline telephony：8 kHz 采样，能保留的频带上限低于 4 kHz
+* 课件列出的常见在线视频音频采样率：48 kHz
+
+采样率决定时间上记录得多密，并不等于声音本身的频率。
+
+#### Quantization 量化
+
+Sampling 离散化时间，quantization 离散化振幅：把每个采样点的幅度映射到有限的数值等级。
+
+* 8-bit signed integer：$-128$ 到 $127$
+* 16-bit signed integer：$-32{,}768$ 到 $32{,}767$
+
+位深越高，可表示的幅度等级越多；在其他条件相同时，量化误差通常越小。
+
+补充一个存储量计算，忽略文件头等开销：
+
+$$
+\text{bitrate}=f_s\times\text{bit depth}\times\text{channels}
+$$
+
+因此，8 kHz、8-bit、单声道音频的码率是 $64{,}000\ \mathrm{bit/s}=64\ \mathrm{kbit/s}$，每秒约 8 kB。
+
+> 音乐软件中的高解析度音频（Hi-Res Audio）通常具有更高的采样率和量化位深！
+
+#### μ-law PCM
+人耳对微弱声音的变化往往更敏感，而对于很大的声音，相同幅度的变化相对不那么明显。μ-law PCM（脉冲编码调制中的 μ 律压扩）先对归一化幅度进行非线性压缩，再量化来解决这个问题：
+
+$$
+F(x)=\operatorname{sgn}(x)\frac{\ln(1+\mu|x|)}{\ln(1+\mu)},
+\qquad -1\le x\le1
+$$
+
+课件中的 8-bit 情况采用 $\mu=255$。
+
+曲线在 $x$ 接近 0 时较陡，因此在压缩后的数值上均匀量化，相当于给原始小幅度信号更细的分辨率，给大幅度信号更粗的分辨率。
+
+直觉上：小声音中的细微差异需要更多保留，大声音可以容忍更大的绝对量化误差。这也呼应了前面心理物理学中的相对敏感度。
+
+### Frequency, Pitch and Signal Power
+
+#### Fundamental Frequency 基频
+
+浊音中的声带反复打开和闭合，产生近似周期性的压力脉冲。重复周期为 $T_0$ 时：
+
+$$
+F_0=\frac{1}{T_0}
+$$
+
+课件波形在约 38.75 ms 内显示约 10 个周期，因此估算：
+
+$$
+F_0\approx\frac{10}{0.03875}\approx258\ \mathrm{Hz}
+$$
+
+Pitch track（音高轨迹）画出 $F_0$ 随时间的变化。例如 “Three o'clock?” 的末尾基频升高，对应疑问语调。
+
+> **音乐软件中的无损音质与 Hi-Res Audio**
+>
+> 音乐软件中常见的 **16-bit/44.1 kHz（CD 音质）** 和 **24-bit/96 kHz（高解析度音频）**，分别对应 Quantization 的位深和 Sampling 的采样率。更高的采样率可以记录更高频率的信号，而更高的位深可以降低量化噪声、扩大动态范围。但人耳通常只能听到约 20 Hz–20 kHz，因此 CD 音质理论上已经能够覆盖人类的可听频率范围，Hi-Res 不一定带来可感知的音质提升。
+>
+> 音乐播放的过程是：**音乐文件（FLAC/ALAC/AAC）→ 数字解码（PCM）→ DAC（数模转换）→ 耳机**。其中解码不等于量化，而是将编码文件还原为数字音频。有线耳机配合合适的 DAC 更容易实现完整的无损传输，但不代表一定能听出 Hi-Res 与普通无损的区别。
+>
+> **💡 一个有趣的问题：** 为什么软件可以把 16-bit 音频转换成 24-bit，却不能真正提升到原生 24-bit 的音质？因为 Quantization 本质上是有信息损失的多对一映射：原始振幅中的细微差异在量化时已经丢失，增加位数只能更精细地表示现有数据，无法凭空恢复丢失的信息。
+
+#### Signal Power 信号功率
+
+瞬时振幅只描述一个采样点。要描述一个时间窗中的整体强弱，可以取幅度平方的均值：
+
+$$
+P=\frac{1}{N}\sum_{i=1}^{N}x_i^2
+$$
+
+* $N$：时间窗内的采样点数
+* $x_i$：第 $i$ 个采样点的幅度
+
+功率比的分贝形式：
+
+$$
+L=10\log_{10}\left(\frac{P}{P_{\mathrm{ref}}}\right)
+$$
+用分贝（dB）表示声音强度，就是将声音的强度与一个参考值进行比较，而这个参考值对应于人类的听觉阈限（Hearing Threshold）
+
+补充说明：如果 $x_i$ 的单位是 Pa，则 $P$ 是均方声压，计算 SPL 应使用参考声压的平方：
+
+$$
+L_p=10\log_{10}\left(\frac{\frac{1}{N}\sum_i x_i^2}{p_0^2}\right)
+=20\log_{10}\left(\frac{p_{\mathrm{rms}}}{p_0}\right)
+$$
+
+这里把课件的功率表达与前面的 SPL 定义统一，避免将“声压”直接与“声压平方”相比。若 $x_i$ 只是未校准的数字音频幅度，也不能直接把计算结果当作实际 dB SPL。
+
+#### Pitch & Mel Scale 音高与梅尔标度
+
+* Frequency / $F_0$：物理频率
+* Pitch：主观音高，通常 $F_0$ 越高，听起来越高
+* Intensity：物理强度
+* Loudness：主观响度
+
+物理量和知觉量不是简单的线性对应。Mel scale 用非线性函数近似描述频率与知觉音高尺度的关系：
+
+$$
+m=1127\ln\left(1+\frac{f}{700}\right)
+$$
+
+* $f$：频率，单位 Hz
+* $m$：mel 值
+
+该映射在低频部分近似线性，高频部分更接近对数关系；相等的 mel 差用于近似表示相等的知觉音高间隔。Mel（梅尔尺度）模拟的是人耳对不同频率的感知分辨率
+
+### Spectrum and Spectrogram
+
+#### Interpreting Speech Waveforms
+
+从波形中可以先观察到一些粗略线索：
+
+* 元音通常较长、较响，并呈现较规则的周期性。
+* Stop consonants（塞音）可能出现接近静音的闭塞阶段，随后出现短暂的 burst（爆破）。
+* 课件用 “baby” 中的两个 [b] 展示闭塞与释放的波形变化。
+
+但仅看时间波形，很难清楚判断复杂声音中包含哪些频率，因此需要转到 frequency domain（频域）。
+
+#### Fourier Analysis 傅里叶分析
+
+复杂信号可以分解为不同频率、幅度和相位的正弦成分。课件中的简单例子：
+
+$$
+y(t)=A_1\sin(2\pi f_1t)+A_2\sin(2\pi f_2t)
+$$
+
+其中 $f_1=10\ \mathrm{Hz}$，$f_2=100\ \mathrm{Hz}$。
+
+* Waveform：不同成分叠加后，随时间如何变化
+* Spectrum 频谱：有哪些频率，各自的幅度有多大
+
+课件还展示了约 234 Hz 的主要周期，以及约 $4\times234=936\ \mathrm{Hz}$ 的更快振荡成分，并通过 discrete Fourier transform（DFT）得到频谱。
+
+#### Spectrogram 声谱图
+
+语音的频率结构随时间变化，因此需要对多个短时间窗分别计算频谱，再沿时间排列。补充用 short-time Fourier transform（STFT）概括这一过程：
+
+$$
+X(m,k)=\sum_{n=0}^{N-1}x[n+mH]w[n]e^{-j2\pi kn/N}
+$$
+
+* $m$：帧编号
+* $H$：hop size，相邻帧的间隔
+* $w[n]$：窗函数
+* $k$：频率索引
+
+Spectrogram 在二维图上同时表达三个量：
+
+| 图中的信息 | 对应量 |
+| --- | --- |
+| 横轴 | Time |
+| 纵轴 | Frequency |
+| 深浅 / 颜色 | Amplitude 或 power，常取对数 |
+
+课件的灰度图中，较深的位置表示更强的频率成分。
+
+#### Formants 共振峰
+
+Formants 是声道共振使能量特别增强的频带，在声谱图上常表现为较深的带状结构。
+
+不同元音对应不同的舌位和声道形状，因此具有不同的共振峰分布，可以据此区分元音。
+
+![Speech Spectrogram 语音声谱图与共振峰](auditory/spectrogram.png)
+
+> Q：$F_0$ 和 formants 是一回事吗？
+>
+> A：不是。$F_0$ 主要描述声带振动的重复速率，与音高有关；formants 描述声道对某些频率的共振增强，与元音音质有关。可以用不同音高发同一个元音，也可以在相近音高下发不同元音。
+
+### Automatic Speech Recognition 语音识别
+
+ASR 把 speech waveform 转换成文字，例如从一段声音识别出 “It's time for lunch!”。
+
+#### Acoustic Features & ConvNet
+
+一个典型的处理流程：
+
+$$
+\text{Waveform}
+\rightarrow\text{Spectrum / Spectrogram}
+\rightarrow\text{Log-Mel Features}
+\rightarrow\text{Acoustic Encoder}
+\rightarrow\text{Text Decoder}
+$$
+
+补充展开 log-mel 的含义：在频谱上使用按 mel 标度分布的滤波器组，汇总各频带能量，再取对数，得到随时间变化的特征。语音识别使用 Mel Spectrogram，主要是为了按照人类听觉的频率分辨特性重新组织频谱，而不是简单地用主观声音强度取代物理强度。进一步使用 Log-Mel Spectrogram，则通过对数变换压缩能量的动态范围，使语音特征更适合机器学习模型处理。
+
+ConvNet 可以在这些特征上提取局部的时间和频率模式。可以类比前面的视觉 CNN：卷积处理的输入结构变成了语音的时频表示。
+
+#### Encoder–Decoder Architecture
+
+* Encoder：把输入声学特征编码为连续的内部表征。
+* Decoder：结合编码结果与已生成的内容，逐步输出字母或 tokens。
+
+补充用条件概率表示：
+
+$$
+P(Y\mid X)=\prod_{t=1}^{|Y|}P(y_t\mid y_{<t},\operatorname{Encoder}(X))
+$$
+
+这里 $X$ 是声学输入，$Y$ 是输出文字序列。语音帧与文字 token 的长度通常不同，因此需要模型建立两者之间的对应关系。
+
+#### Whisper Architecture
+
+课件以 Whisper 说明 Transformer encoder–decoder 如何用于语音识别：
+
+![Whisper Encoder–Decoder Architecture](auditory/whisper.png)
+
+1. 输入 log-mel spectrogram。
+2. 两层 Conv1D + GELU 提取特征，加入位置编码。
+3. Transformer encoder 处理声音序列。
+4. Transformer decoder 通过 cross-attention 读取 encoder 表征，同时根据已有 tokens 预测下一个 token。
+5. 输出序列中可以包含语言、任务、时间戳和文字等信息。
+
+这里可以看到前面的 perception、representation 和 attention 在工程系统中的对应：先把信号转换成表征，再根据输入和上下文生成结果。
+
+### Text-to-Speech 语音合成
+
+TTS 的任务方向与 ASR 相反：输入文字，输出语音。
+
+课件介绍的一类方法把语音生成转化为离散 audio tokens 的序列建模：
+
+1. 使用 audio codec（音频编解码器）的 encoder，把语音转换为离散 audio tokens。
+2. 用 text tokenizer 得到 text tokens。
+3. 训练能够处理文字和音频 tokens 的语言模型，根据文字等条件生成 audio tokens。
+4. 使用 audio codec decoder，把生成的 tokens 还原为语音波形。
+
+$$
+\text{Text Tokens}
+\rightarrow\text{Audio Token Generation}
+\rightarrow\text{Audio Codec Decoder}
+\rightarrow\text{Speech Waveform}
+$$
+
+课件中的 VALL-E 示意图还加入了一小段参考录音作为 prompt，以提供说话人的声音特征，生成个性化语音。
+
+> Q：Audio token 就是音素吗？
+>
+> A：不一定。这里的 token 是音频编码器学习到的离散表示，可以携带音色、韵律和声学细节，不要求与语言学中的音位逐一对应。
+
+
+## Language and Syntax
+
+词属于什么类别，如何组成有层级的句子，以及为什么有些句子虽然合乎语法，理解起来却更费力。偏向自然语言处理的内容。
+
+### Neural Basis of Language Processing 语言加工的神经基础
+
+#### Broca's Area 布罗卡区
+
+Broca 通过研究 aphasia（失语症）患者，将左半球额叶下回的一部分区域与言语产生联系起来，通常对应 Brodmann areas 44、45。
+
+主要功能：计划和执行说话（speech production）。
+
+Expressive aphasia（表达性 / 运动性失语）表现为：
+
+* 言语输出困难，说话缓慢、不流畅。
+* 严重时只能反复说少数词语。
+* 相对于言语输出，部分语言理解能力可以保留。
+
+#### Wernicke's Area 韦尼克区
+
+经典定位主要涉及左侧颞上回后部的 Brodmann area 22，与语言理解（comprehension）有关。
+
+Wernicke's aphasia 属于 fluent aphasia（流利性失语）：
+
+* 说话可以相对流畅，保留自然的节奏和部分句法形式。
+* 词语选择和表达意义出现明显问题，说出的内容可能难以理解。
+* 语言理解明显受损，也可能难以意识到自己说话中的问题。
+
+#### Language Centers 语言中枢
+
+语言加工涉及多个脑区，而不只是某一个点。课件示意图包括：
+
+* Broca's area 布罗卡区
+* Wernicke's area 韦尼克区
+* Angular gyrus 角回
+* Primary auditory cortex 初级听觉皮层
+* Supramarginal gyrus 缘上回
+
+![Language Centers 语言相关脑区](syntax/language_centers.png)
+
+课件按运动性、听觉性和视觉性语言功能进行介绍，可以和上一节的听觉输入、语义理解、言语输出模块联系起来理解。但认知模型中的一个功能模块，不必与某一个脑区逐一对应。
+
+> Q：能流利说话，就代表理解和表达意义都正常吗？
+>
+> A：不代表。流畅度、词义理解和表达内容可以发生分离，这也是失语症病例对研究语言加工的重要意义。
+
+### Part-of-Speech Tagging 词性标注
+
+#### Part of Speech 词性
+
+Words 可以根据 grammatical categories（语法类别）分类，这些类别称为 part of speech，简称 POS。
+
+POS tagging 的任务：为句子中的每个词确定在当前语境下的词性。
+
+例句：
+
+```text
+the   Sun   rises   every   morning
+DET   NOUN  VERB    DET     NOUN
+```
+
+常见类别包括：
+
+| 类别 | 含义 | 例子 |
+| --- | --- | --- |
+| Noun | 名词 | cat, flight |
+| Proper noun | 专有名词 | Janet, Italy |
+| Verb | 动词 | eat, prefer |
+| Adjective | 形容词 | green, tasty |
+| Adverb | 副词 | slowly, hesitantly |
+| Determiner | 限定词 | a, the, some |
+| Pronoun | 代词 | I, they |
+| Preposition | 介词 | on, with, from |
+| Conjunction | 连词 | and, or |
+| Auxiliary | 助动词 | can, had |
+
+具体标签名取决于标注体系，例如专有名词可能写作 PROPN，不同语料库的标签不一定完全相同。
+
+#### Open Class & Closed Class
+
+* Open class 开放类：成员可以不断增加，通常包括名词、主要动词、形容词、副词等 content words（内容词）。新概念和借词会持续进入这些类别。
+* Closed class 封闭类：成员相对固定，通常包括限定词、代词、介词、连词等 function words（功能词），主要承担语法功能。
+
+这里的“封闭”指成员扩展相对有限，不是绝对不发生变化。
+
+#### POS in Chinese 中文词性
+
+中文同样有名词、动词、形容词、数词、代词、介词、连词等类别。课件特别列出：
+
+* 量词（measure words）：如“个、条、张”；动量词如“次、遍、趟”。
+* 结构助词：如“的、地、得”。
+* 动态助词：如“了、着、过”。
+* 语气助词：如“吗、吧、呢”。
+
+这些类别需要结合中文自身的语法理解，不能直接把英文类别逐项套过来。例：
+
+```text
+快速  的   棕色  狐狸  跳过  了  懒惰  的   狗
+VA    DEC  NN    NN    VV    AS  VA    DEC  NN
+```
+
+其中 VA 表示形容词性谓词，NN 表示普通名词，VV 表示动词，AS 表示体标记；DEC 是该例所用标签集中的一种“的”字标记。这些是该标注体系中的分类，不代表每一种分析体系都会给出完全相同的结果。
+
+#### Word Types vs. Word Tokens
+
+对于英语的统计：
+
+* 约 15% 的 word types 存在词性歧义。
+* 约 85% 的 word types 没有词性歧义。
+* 但有歧义的词往往非常常见，因此约 60% 的 word tokens 涉及词性歧义。
+
+Type 是不同词形的种类，token 是实际文本中每一次出现的词。一个词只计为一种 type，却可以在文本中出现很多次。
+
+例如 love 在不同句子中可以是名词或动词。课件的 “Love loves to love love.” 展示了同一词形在不同位置承担不同语法作用。
+
+> Q：大多数词都没有歧义，为什么词性标注仍然需要上下文？
+>
+> A：因为高频词恰好经常有多种用法。按词典统计“有歧义的词有多少种”和按文本统计“有多少次出现需要消歧”，得到的比例不同。
+
+#### Baseline and Tagging Accuracy
+
+课件引用的英语结果中，POS tagging 的 tag accuracy 约为 97%，而 most frequent class baseline 已经约为 92%。
+
+Baseline 的做法：
+
+1. 每个词都标成它在训练数据中最常见的词性。
+2. 不认识的词先标成名词。
+
+补充写成：
+
+$$
+\hat t(w)=\arg\max_t\operatorname{Count}(w,t)
+$$
+
+这个方法不看当前上下文，但仍然可以取得较高准确率，因此评估模型时必须与 baseline 比较。课件还指出，在所引用的英语任务中，HMM、CRF、BERT 等方法的表现相近。
+
+这些是课件引用的特定任务和数据结果，不是所有语言、领域或语料上的固定上限。
+
+中文部分列出的现代汉语结果约为 94–97 F1。注意 F1 与前面的 tag accuracy 不是同一个指标，也不能直接把这些结果推广到古汉语。
+
+“老吾老，以及人之老”和“五亩之宅，树之以桑”：古汉语存在不同的词类用法。“老吾老”中第一个“老”可按动词性用法理解，“树之以桑”的“树”表示种植，机械地全部标为名词就会出错。
+
+### Syntax and Constituency 句法与成分
+
+Syntax 研究词如何排列、组合成句子。POS 只描述每个词属于什么类别，句法分析还要描述词之间如何形成结构。
+
+#### Constituency 成分结构
+
+一组词如果在语法上作为一个整体发挥作用，就可以构成 constituent（成分）。
+
+课件列出的 noun phrases（NP，名词短语）包括：
+
+* the Broadway coppers
+* three parties from Brooklyn
+* they
+
+这些表达长度不同，却都可以出现在句子的主语位置：
+
+```text
+three parties from Brooklyn arrive ...
+the Broadway coppers love ...
+they sit ...
+```
+
+所以句法结构不是简单的“第几个词是什么词性”，还需要识别哪些词可以组合成同一个单位。单个代词也可以占据 NP 的位置。
+
+#### Evidence for Constituency 成分的证据
+
+课件用移动位置说明 “on February 2nd” 是一个 prepositional phrase（PP，介词短语）：
+
+```text
+On February 2nd, I'd like to fly from Shanghai to Osaka.
+I'd like to fly on February 2nd from Shanghai to Osaka.
+I'd like to fly from Shanghai to Osaka on February 2nd.
+```
+
+这段表达可以整体前置或后置，但如果随意拆开：
+
+```text
+* On February, I'd like to fly 2nd from Shanghai to Osaka.
+```
+
+就破坏了原来的结构。这里句首的 `*` 是语言学中标记不合语法表达的符号。
+
+#### Basic Terminology
+
+* Phrase：短语 / 词组
+* Noun Phrase，NP：名词短语
+* Verb Phrase，VP：动词短语
+* Prepositional Phrase，PP：介词短语
+* Proper Noun：专有名词
+* Nominal：课件语法中用于组织名词性结构的非终结符
+
+### Context-Free Grammar 上下文无关文法
+
+CFG 也称 phrase-structure grammar（短语结构文法），用一组 rules / productions（规则 / 产生式）描述符号如何组合和排列。
+
+课件将这一形式化方向与 Wundt、Chomsky，以及计算机科学中的 Backus、Naur 等人的工作联系起来。
+
+#### Rules and Symbols
+
+课件中的基本规则：
+
+```text
+NP → Det Nominal
+NP → ProperNoun
+Nominal → Noun | Nominal Noun
+Det → a | the
+Noun → flight
+```
+
+* `→`：左边的符号可以改写为右边的序列。
+* `|`：有多种可选规则，相当于“或者”。
+* Terminal 终结符：实际出现的词，例如 a、the、flight。
+* Non-terminal 非终结符：抽象的结构类别，例如 NP、Det、Nominal、Noun。
+
+Noun 虽然描述名词类别，但在这里仍然是非终结符，因为它还需要进一步展开成实际的词。
+
+补充形式化表示：
+
+$$
+G=(N,\Sigma,R,S)
+$$
+
+* $N$：非终结符集合
+* $\Sigma$：终结符集合
+* $R$：产生式集合
+* $S$：指定的起始符号（start symbol），句子语法通常使用 S
+
+> Q：为什么叫 context-free？
+>
+> A：每条产生式的左侧是一个非终结符，对它的改写不要求检查左右相邻符号。例如只要使用 `NP → Det Nominal`，就可以展开 NP。“上下文无关”说的是规则形式，不是说理解自然语言不需要语境。
+
+#### Hierarchical Embedding & Recursion
+
+一个非终结符可以展开成其他非终结符，因此规则可以层层嵌套。
+
+`Nominal → Nominal Noun` 还可以递归应用，最终用 `Nominal → Noun` 结束：
+
+```text
+Nominal
+→ Nominal Noun
+→ Noun Noun
+→ morning flight
+```
+
+这里还需要词汇规则 `Noun → morning | flight`。有限的规则通过递归可以描述长度不断增加的结构，但并不保证每一种生成结果在语义上都自然。
+
+#### Generating a Phrase
+
+从 NP 开始，可以生成 a flight：
+
+$$
+\mathrm{NP}
+\Rightarrow\mathrm{Det\ Nominal}
+\Rightarrow\mathrm{a\ Nominal}
+\Rightarrow\mathrm{a\ Noun}
+\Rightarrow\mathrm{a\ flight}
+$$
+
+整个推导过程可以表示成 parse tree（句法树）。树中的父节点支配其下方的后代节点，这种关系称为 domination。
+
+#### Sentence-level Rules
+
+课件进一步加入：
+
+```text
+S → NP VP
+NP → Pronoun | ProperNoun | Det Nominal
+Nominal → Noun | Nominal Noun
+VP → Verb | Verb NP | Verb NP PP | Verb PP
+PP → Preposition NP
+```
+
+* `S → NP VP`：句子由名词短语和动词短语组成。
+* `VP → Verb NP`：动词后接名词短语，如 prefer a morning flight。
+* `VP → Verb PP`：动词后接介词短语，如 leaving on Thursday。
+* `PP → Preposition NP`：介词后接名词短语，如 from Los Angeles。
+
+ATIS（Air Travel Information System）语料中的例子主要围绕航空出行请求。课件用这套简化语法生成：
+
+```text
+I prefer a morning flight
+```
+
+生成时从 S 出发，逐步选择规则、展开非终结符，直到只剩下终结符。Parsing 则从给定句子出发，寻找符合语法的结构分析。
+
+#### Parse Tree & Bracketed Notation
+
+![Constituency Parse Tree 成分句法树](syntax/constituency_tree.png)
+
+同一棵树可以用嵌套括号表达。下面沿用前面的标签，把 Nominal 的递归层次写完整：
+
+```text
+(S
+  (NP (Pronoun I))
+  (VP
+    (Verb prefer)
+    (NP
+      (Det a)
+      (Nominal
+        (Nominal (Noun morning))
+        (Noun flight)))))
+```
+
+* 整句是 S。
+* 主语 I 构成一个 NP。
+* prefer a morning flight 构成 VP。
+* a morning flight 是 VP 内部的 NP。
+
+因此，句子既有线性顺序，也有层级结构。
+
+#### Grammaticality 语法性
+
+相对于一套指定语法：
+
+* 能够由起始符号推导出来的句子属于该语法生成的语言。
+* 不能推导出来的句子不属于该语法生成的语言。
+
+但一套教学用 CFG 只覆盖自然语言的一小部分。不能由这套规则生成，不等于真实语言中一定不合语法；能够生成，也不代表意义合理或表达自然。
+
+### Dependency Grammar 依存语法
+
+Constituency 描述词如何组成短语；dependency grammar 直接用词之间的有向语法关系描述句子结构。
+
+#### Head and Dependent
+
+* Head 中心词：支配某个依存关系的词。
+* Dependent 依存词：依附于中心词的词。
+* Labeled arc：带有关系标签、从 head 指向 dependent 的有向弧。
+
+课件例句：
+
+```text
+I prefer the morning flight through Denver
+```
+
+![Dependency Parse 依存关系树](syntax/dependency_tree.png)
+
+其中：
+
+* `prefer → I`：nsubj，主语关系。
+* `prefer → flight`：obj，宾语关系。
+* `flight → the`：det，限定关系。
+* `ROOT → prefer`：把句子的核心动词连接到虚拟根节点。
+
+ROOT 不是真实发出的词，而是表示整棵依存树起点的符号。具体关系标签和附着方式也与分析体系有关。
+
+| 表示方式 | 核心问题 | 主要节点 |
+| --- | --- | --- |
+| Constituency | 哪些词组成一个短语，短语如何嵌套？ | 词以及 NP、VP、S 等结构类别 |
+| Dependency | 哪个词依赖哪个词，是什么关系？ | 句子中的词，通常另设虚拟 ROOT |
+
+> Q：词性标注和句法分析有什么区别？
+>
+> A：词性标注给每个词分配类别；成分句法分析组织短语的层级；依存分析确定词与词之间的关系。知道每个词的类别，还没有完整描述句子的结构。
+
+### Cognitive Effort in Processing Language
+
+同样合乎语法的句子，理解难度可能不同。课件介绍 locality 和 uniform information density 两种解释思路。
+
+#### Locality of Syntactic Dependencies 句法依赖的局部性
+
+先看简单句：
+
+```text
+The reporter admitted the error.
+```
+
+再加入 relative clause（RC，关系从句）：
+
+```text
+1a. The reporter who the senator attacked admitted the error.
+1b. The reporter who attacked the senator admitted the error.
+```
+
+* 1a：记者是 attacked 的宾语，意思是“被参议员攻击的记者承认了错误”，属于 object relative clause（宾语关系从句）。
+* 1b：记者是 attacked 的主语，意思是“攻击了参议员的记者承认了错误”，属于 subject relative clause（主语关系从句）。
+
+课件指出，这类英语例子中，1a 通常比 1b 更难处理。
+
+![Dependency Locality 依赖距离与记忆负担](syntax/dependency_locality.png)
+
+Locality 的解释：
+
+* 1a 中，读到 who 后，要经过 the senator，才到 attacked，才能建立相关依赖。
+* 1b 中，who 后紧接 attacked，依赖关系更局部。
+* 等待期间需要保持尚未完成的结构信息；距离更长、同时未完成的依赖更多时，记忆和整合负担可能更大。
+
+这里的 distance 不是简单地把整句单词数相加，而是关注有依赖关系的成分之间隔了什么，以及哪些结构还没有完成。
+
+> Q：这两个句子几乎使用相同的词，为什么理解难度不同？
+>
+> A：词汇相同不代表结构相同。reporter 在关系从句中充当主语还是宾语，会改变依赖关系及其建立时机，因此改变加工负担。
+
+#### Uniform Information Density 均匀信息密度
+
+UID 假说认为，说话者倾向于让信息在表达过程中较均匀地分布，避免局部突然出现过高的信息负荷。
+
+课件例句：
+
+```text
+1a. My boss confirmed we were absolutely crazy.
+1b. My boss confirmed that we were absolutely crazy.
+```
+
+两句都可以成立，但 that 的出现可以提前提示后面是一个从句，改变后续信息的可预测性。
+
+![Uniform Information Density 信息密度随时间的变化](syntax/uniform_information_density.png)
+
+课件图中，不带 that 的版本在 we 附近出现明显的信息峰值；带 that 的版本把部分结构信息提前表达，使信息分布更平滑。
+
+补充用 surprisal（惊异度）描述一个词带来的信息量：
+
+$$
+I(w_t)=-\log_2P(w_t\mid w_{<t})
+$$
+
+* 上下文中越可预测的词，surprisal 越小。
+* 越出乎预期的词，surprisal 越大。
+* 单位为 bit；课件图纵轴以 bits/word 表示信息密度。
+
+增加一个功能词虽然让句子变长，却可能降低后面某个位置的信息峰值。UID 因此不等于“越短越好”，也不要求每个词的信息量严格相等。
+
+#### Locality vs. UID
+
+| 理论 | 主要关注 | 课件中的例子 |
+| --- | --- | --- |
+| Locality | 依赖之间的距离、尚未完成结构的记忆负担 | 主语 / 宾语关系从句 |
+| UID | 预测难度和信息量是否出现突然的峰值 | 是否加入 that |
+
+二者关注的是不同方面：一个强调结构依赖如何保存在记忆中，另一个强调信息如何随表达展开。它们提供理解加工难度的不同视角，不必视为互斥解释。
