@@ -973,8 +973,9 @@ g_i(x^*)\le0, &\text{可行性}\\
 \end{cases}
 $$
 
-> 乘子为什么有正负限制：放宽 $g_i(x)\le b_i$ 的右端项，可行域扩大，最小值不会增大，最大值不会减小，而 $\lambda_i$ 表示目标最优值对 $b_i$ 的变化率。
-> 在最优点，我们有$\nabla f=\lambda\nabla g$而允许的方向满足$\nabla g^Td\leq0$,对于极小值，沿着允许方向的一阶变化不能为负$\nabla f^Td\geq0$代入梯度关系$\nabla f^Td=\lambda\nabla g^Td$由于$\nabla g^Td\leq0$为了保证乘积不小于零，活跃约束的乘子就应该满足$\lambda\leq0$
+> 解释1:乘子为什么有正负限制：放宽 $g_i(x)\le b_i$ 的右端项，可行域扩大，最小值不会增大，最大值不会减小，而 $\lambda_i$ 表示目标最优值对 $b_i$ 的变化率。
+
+> 解释2:在最优点，我们有$\nabla f=\lambda\nabla g$，而允许的方向满足$\nabla g^Td\leq0$，对于极小值，沿着允许方向的一阶变化不能为负，$\nabla f^Td\geq0$代入梯度关系$\nabla f^Td=\lambda\nabla g^Td$。由于$\nabla g^Td\leq0$为了保证乘积不小于零，活跃约束的乘子就应该满足$\lambda\leq0$
 
 若使用 $L=f+\sum_i\mu_i g_i$，极小化时对应 $\mu_i\ge0$，只需令 $\mu_i=-\lambda_i$。如果还有等式约束，则加入相应梯度项与可行性条件，等式乘子仍无符号限制。
 
@@ -996,11 +997,565 @@ $$
 
 **求解顺序**：利用互补松弛讨论活跃约束，解平稳方程，再检查可行性、乘子符号和二阶条件。一般 NLP 的 KKT 点只是候选点，不保证全局最优；约束梯度不独立时，极值点也可能不满足 KKT，需要单独检查。
 
+### 3. Convex programming problem 凸规划
+
+一般 NLP 中，KKT 只能帮我们找到候选点，还需要继续检查二阶条件，最终也只能得到局部最优。凸规划进一步要求目标函数和可行域具有凸性，使得**局部最优就是全局最优**，满足 KKT 的点也可以直接判定为全局最优。
+
+对于极小化问题，需要两个条件：可行域是凸集，目标函数是凸函数。极大化问题则要求在凸集上最大化凹函数。
+
+#### Convex set 凸集
+
+若集合 $S\subseteq\mathbb R^n$ 中任意两点之间的整条线段仍在 $S$ 内，则称 $S$ 为**凸集（convex set）**：
+
+$$
+x_1,x_2\in S,\quad\alpha\in[0,1]
+\quad\Rightarrow\quad
+\alpha x_1+(1-\alpha)x_2\in S.
+$$
+
+**常见例子**：$\mathbb R^n$、单点集、空集、超平面、半空间、射线、球和多面体都是凸集。
+
+$$
+\begin{aligned}
+\text{超平面： }&\{x:a^Tx=b\},\qquad a\ne0,\\
+\text{半空间： }&\{x:a^Tx\le b\},\\
+\text{射线： }&\{x_0+tu:t\ge0\},\\
+\text{球： }&\{x:\|x-x_0\|_2\le r\},\qquad r\ge0,\\
+\text{多面体： }&\{x:Ax\le b\}.
+\end{aligned}
+$$
+
+球包含内部，球面一般不是凸集。例如圆盘是凸集，圆周上两点的连线通常会离开圆周。
+
+**保凸运算**：若 $S_1,S_2$ 是凸集，则以下集合仍为凸集：
+
+$$
+\begin{aligned}
+\beta S_1&=\{\beta x:x\in S_1\},\qquad\beta\in\mathbb R,\\
+S_1\cap S_2&=\{x:x\in S_1,\ x\in S_2\},\\
+S_1+S_2&=\{x_1+x_2:x_1\in S_1,\ x_2\in S_2\},\\
+S_1-S_2&=\{x_1-x_2:x_1\in S_1,\ x_2\in S_2\}.
+\end{aligned}
+$$
+
+这里 $S_1-S_2$ 表示两集合中向量的差组成的集合，不是集合差 $S_1\setminus S_2$。任意多个凸集的交集仍为凸集，并集一般不保持凸性。
+
+**Convex combination（凸组合）**：给定 $k$ 个点，若
+
+$$
+x=\sum_{i=1}^k\alpha_i x_i,\qquad
+\alpha_i\ge0,\qquad\sum_{i=1}^k\alpha_i=1,
+$$
+
+则称 $x$ 为这些点的凸组合。凸集包含其中任意有限个点的全部凸组合。
+
+**Extreme point（极点）**：若 $x\in S$ 不能写成 $S$ 中两个不同点的非平凡凸组合，即不存在 $y\ne z$、$\alpha\in(0,1)$ 使 $x=\alpha y+(1-\alpha)z$，则称 $x$ 为极点。多面体的极点就是前面 LP 中的顶点。
+
+> 极点描述集合的几何结构，极值点描述目标函数的取值。凸规划的最优解可以在内部，例如 $\min_{-1\le x\le1}x^2$ 的最优解是 $x=0$，所以一般凸规划不能只搜索顶点。
+
+#### Convex function 凸函数
+
+设 $f:S\to\mathbb R$，且定义域 $S$ 是凸集。若对任意 $x_1,x_2\in S$ 和 $\alpha\in[0,1]$ 都有：
+
+$$
+f(\alpha x_1+(1-\alpha)x_2)
+\le\alpha f(x_1)+(1-\alpha)f(x_2),
+$$
+
+则称 $f$ 为**凸函数（convex function）**。几何意义是：函数图像位于任意两点连成的弦的下方。
+
+- **严格凸（strictly convex）**：当 $x_1\ne x_2$、$\alpha\in(0,1)$ 时，上式严格小于。
+- **凹函数（concave function）**：$-f$ 是凸函数，也就是将上式改为大于等于。严格凹同理。
+- **仿射函数（affine function）**：$f(x)=a^Tx+b$，在上述不等式中总取等号，因此既凸又凹。
+
+**一阶判定：任意一点的切平面都是全局下界**
+
+若 $S$ 是非空开凸集，$f$ 可微，则：
+
+$$
+f\text{ 凸}\quad\Longleftrightarrow\quad
+f(y)\ge f(x)+\nabla f(x)^T(y-x),\qquad\forall x,y\in S.
+$$
+
+先理解右边的各项。固定一个点 $x$，把 $y$ 看成任意另一个点：
+
+- $f(x)$：在出发点的函数值。
+- $y-x$：从 $x$ 到 $y$ 的位移。
+- $\nabla f(x)^T(y-x)$：用 $x$ 处的梯度预测这段位移引起的一阶变化。
+
+因此 $f(x)+\nabla f(x)^T(y-x)$ 就是在 $x$ 处对 $f(y)$ 做的一阶 Taylor 近似。一元时对应切线，多元时对应函数图像的切平面。判定条件要求：**真实函数值始终不低于这个一阶预测值，而且对所有出发点和终点都成立。**
+
+例如 $f(x)=x^2$，在 $x$ 处对 $f(y)$ 的一阶预测是 $x^2+2x(y-x)$，两者之差为：
+
+$$
+f(y)-[f(x)+f'(x)(y-x)]
+=y^2-x^2-2x(y-x)=(y-x)^2\ge0.
+$$
+
+所以抛物线在每一条切线上方。凸函数的定义说图像在两点的**弦下方**，一阶判定说图像在每一点的**切平面上方**，这两个说法等价。
+
+> “一阶”表示只用到一阶导数，不表示只检查很小的邻域。一般函数的 Taylor 一阶近似只描述局部变化；凸函数的一阶近似还能给出整个定义域上的下界。
+
+**证明：凸函数必然满足一阶不等式**
+
+任取 $x,y\in S$，记 $d=y-x$。由于 $S$ 凸，线段上的点 $x+td=(1-t)x+ty$ 仍在 $S$ 内。由凸函数定义，对 $0<t<1$：
+
+$$
+f(x+td)\le(1-t)f(x)+tf(y).
+$$
+
+$$
+\frac{f(x+td)-f(x)}{t}\le f(y)-f(x).
+$$
+
+令 $t\to0^+$。左边是沿 $d$ 的方向导数，等于 $\nabla f(x)^Td$，于是：
+
+$$
+\nabla f(x)^T(y-x)\le f(y)-f(x).
+$$
+
+移项就是所需的一阶不等式。直观上，把弦的一个端点不断移近 $x$，弦的斜率趋近于切线的斜率。
+
+**证明：一阶不等式成立，就能推出凸性**
+
+任取 $x,y\in S$，令 $z=(1-t)x+ty$，其中 $0<t<1$。在同一个点 $z$ 做一阶近似，分别预测 $f(x)$ 和 $f(y)$：
+
+$$
+\begin{aligned}
+f(x)&\ge f(z)+\nabla f(z)^T(x-z),\\
+f(y)&\ge f(z)+\nabla f(z)^T(y-z).
+\end{aligned}
+$$
+
+第一式乘 $1-t$，第二式乘 $t$，再相加。因为：
+
+$$
+(1-t)(x-z)+t(y-z)=(1-t)x+ty-z=0,
+$$
+
+梯度项恰好抵消，得到：
+
+$$
+(1-t)f(x)+tf(y)\ge f(z)
+=f((1-t)x+ty).
+$$
+
+这就是凸函数的定义，端点 $t=0,1$ 时自然取等号。
+
+**严格凸的一阶判定**：在同样的可微和定义域条件下，$f$ 严格凸，当且仅当对任意 $x\ne y$ 都有：
+
+$$
+f(y)>f(x)+\nabla f(x)^T(y-x).
+$$
+
+反向证明只需把上面在 $z$ 处的两条不等式改为严格不等式。正向证明则取中点 $z=(x+y)/2$，结合已证的一阶不等式与严格凸性：
+
+$$
+f(x)+\frac12\nabla f(x)^T(y-x)
+\le f(z)<\frac12 f(x)+\frac12 f(y),
+$$
+
+整理后即得严格的一阶不等式。
+
+> **与最优化的联系**：若 $\nabla f(x^*)=0$，一阶下界变成水平面 $f(y)\ge f(x^*)$，所以这个平稳点是全局极小点。严格凸时，对其他点都有 $f(y)>f(x^*)$，因此最优解唯一。
+
+**二阶判定：每一点沿每个方向的曲率都非负**
+
+若 $f$ 在非空开凸集 $S$ 上二阶连续可微，则：
+
+$$
+f\text{ 凸}\quad\Longleftrightarrow\quad
+\nabla^2f(x)\succeq0,\qquad\forall x\in S.
+$$
+
+一元时，这就是熟悉的 $f''(x)\ge0$：导数 $f'(x)$ 单调不减，函数图像不会向下弯。多元时，Hessian 是矩阵，需要指定一个方向 $d$，才能讨论沿这个方向的弯曲情况。
+
+固定 $x$ 和方向 $d$，把多元函数限制到一条直线上，得到一元函数：
+
+$$
+\phi(t)=f(x+td).
+$$
+
+由链式法则：
+
+$$
+\phi'(t)=\nabla f(x+td)^Td,\qquad
+\phi''(t)=d^T\nabla^2f(x+td)d.
+$$
+
+所以 **$d^T\nabla^2f(x)d$ 就是沿方向 $d$ 的二阶导数**。半正定的含义是：
+
+$$
+\nabla^2f(x)\succeq0
+\quad\Longleftrightarrow\quad
+ d^T\nabla^2f(x)d\ge0,\qquad\forall d\in\mathbb R^n.
+$$
+
+这要求所有方向的曲率都非负，并不是要求 Hessian 的每个元素非负。例如 $f(x_1,x_2)=(x_1-x_2)^2$ 的 Hessian 为 $\begin{bmatrix}2&-2\\-2&2\end{bmatrix}$，虽然包含负元素，但其二次型为 $2(d_1-d_2)^2\ge0$，因此函数仍然凸。
+
+**证明：凸函数的 Hessian 必须处处半正定**
+
+任取 $x\in S$ 和方向 $d$。因为 $S$ 是开集，充分小的位移 $x+td$ 仍在定义域内。由刚才的一阶判定：
+
+$$
+f(x+td)-f(x)-t\nabla f(x)^Td\ge0.
+$$
+
+对左侧做二阶 Taylor 展开：
+
+$$
+\frac12t^2d^T\nabla^2f(x)d+o(t^2)\ge0.
+$$
+
+其中 $o(t^2)$ 表示除以 $t^2$ 后趋于零的余项。两边除以 $t^2/2>0$，令 $t\to0$，得到：
+
+$$
+d^T\nabla^2f(x)d\ge0.
+$$
+
+由于 $x,d$ 任意，Hessian 在所有点都半正定。
+
+**证明：Hessian 处处半正定，就能推出凸性**
+
+任取 $x,y\in S$，令 $d=y-x$，考察连接两点的线段：
+
+$$
+\phi(t)=f(x+td),\qquad t\in[0,1].
+$$
+
+若 Hessian 处处半正定，则：
+
+$$
+\phi''(t)=d^T\nabla^2f(x+td)d\ge0.
+$$
+
+因此 $\phi'$ 单调不减，对 $t\in[0,1]$ 有 $\phi'(t)\ge\phi'(0)$。积分得到：
+
+$$
+\begin{aligned}
+f(y)-f(x)
+&=\phi(1)-\phi(0)\\
+&=\int_0^1\phi'(t)\,dt\\
+&\ge\int_0^1\phi'(0)\,dt
+=\nabla f(x)^T(y-x).
+\end{aligned}
+$$
+
+这正是一阶判定中的不等式，所以 $f$ 凸。也就是说，把多元函数沿任意线段看成一元函数后，所有这些一元函数都有非负二阶导数。
+
+**正定与严格凸**：若每一点的 Hessian 都正定，则对非零 $d$ 有 $\phi''(t)>0$，上面的积分不等式对 $x\ne y$ 严格成立，因此 $f$ 严格凸。反过来，严格凸不要求 Hessian 处处正定。例如 $f(x)=x^4$ 的导数 $4x^3$ 严格递增，可推出切线严格位于其余图像下方，所以函数严格凸，但 $f''(0)=0$。凹函数对应 Hessian 半负定，处处负定可保证严格凹。
+
+> 两条判定都需要在整个定义域上检查：一阶判定检查所有 $x,y$，二阶判定检查所有 $x$ 和所有方向 $d$。前面的二阶极值判定是在一个候选点检查曲率，用来判断局部极值；这里检查的是整个函数的凸性。凸集保证连接两点的线段始终在定义域内，开集保证每一点附近都能沿任意方向做微分。
+
+**例：**
+
+$$
+f(x)=2x_1^2+x_2^2-2x_1x_2+x_1+1,\qquad
+\nabla^2f=\begin{bmatrix}4&-2\\-2&2\end{bmatrix}.
+$$
+
+Hessian 的顺序主子式为 $4>0$、$4\times2-(-2)^2=4>0$，因此正定，$f$ 严格凸。解 $\nabla f=0$ 得 $x^*=(-1/2,-1/2)$，这是唯一的全局极小点，$f(x^*)=3/4$。
+
+#### 常见函数与保凸运算
+
+下表中的 $\log$ 取自然对数。
+
+| 函数 | 定义域及条件 | 凸性 |
+| --- | --- | --- |
+| $a^Tx+b$ | $x\in\mathbb R^n$ | 既凸又凹 |
+| $e^{ax}$ | $x\in\mathbb R$，$a\in\mathbb R$ | 凸 |
+| $x^\alpha$ | $x>0$，$\alpha\ge1$ 或 $\alpha\le0$ | 凸 |
+| $x^\alpha$ | $x>0$，$0\le\alpha\le1$ | 凹 |
+| $\lvert x\rvert^p$ | $x\in\mathbb R$，$p\ge1$ | 凸 |
+| $x\log x$ | $x>0$ | 凸（负熵） |
+| $\log x$ | $x>0$ | 凹 |
+| $\lVert x\rVert_p$ | $x\in\mathbb R^n$，$p\ge1$，也包括 $p=\infty$ | 凸 |
+
+其中：
+
+$$
+\|x\|_p=\left(\sum_{i=1}^n|x_i|^p\right)^{1/p},\qquad
+\|x\|_\infty=\max_i|x_i|.
+$$
+
+矩阵也可以作为变量。矩阵仿射函数 $f(X)=\operatorname{tr}(A^TX)+b=\sum_{i,j}A_{ij}X_{ij}+b$ 既凸又凹；谱范数是凸函数：
+
+$$
+\|X\|_2=\sigma_{\max}(X)
+=\sqrt{\lambda_{\max}(X^TX)}.
+$$
+
+> 谱定理与谱范数
+>
+> **谱定理**：实对称矩阵可以写成 $A=Q\Lambda Q^T$，其中 $Q$ 的列是相互正交的单位特征向量，$\Lambda$ 的对角元素是特征值。可以理解为换一组正交坐标后，沿各个坐标方向分别缩放。对称矩阵半正定，等价于所有特征值非负。
+>
+> **谱范数**：$\|X\|_2=\max_{v\ne0}\frac{\|Xv\|_2}{\|v\|_2}$，表示矩阵最多能把向量长度放大多少倍，等于最大奇异值 $\sigma_{\max}(X)$，也等于 $\sqrt{\lambda_{\max}(X^TX)}$，长方形矩阵也适用。
+>
+> 一般矩阵看最大奇异值；实对称矩阵可直接看特征值的最大绝对值，即 $\|A\|_2=\max_i|\lambda_i(A)|$；若还半正定，则就是最大特征值。例如 $A=\operatorname{diag}(3,-5)$ 的谱范数是 $5$。
+
+**常用保凸规则**（在相应定义域上）：
+
+1. 非负加权和：若 $f_i$ 凸、$\alpha_i\ge0$，则 $\sum_i\alpha_i f_i$ 凸。这里权重之和不必等于 $1$。
+2. 逐点最大值：若 $f_i$ 凸，则 $\max_i f_i(x)$ 凸，但可能不可微。（最大值保持凸性，最小值一般不保持。例如 $\min\{x,-x\}=-|x|$ 不是凸函数。）
+3. 仿射复合：若 $f$ 凸，则 $f(Ax+b)$ 凸。
 
 
+$$
+A((1-t)x+ty)+b=(1-t)(Ax+b)+t(Ay+b).
+$$
 
+4. 单调复合：若 $g$ 凸且单调不减，$h$ 凸，则 
+    
+    $g(h(x))$ 凸。$g(h((1-t)x+ty))\le g((1-t)h(x)+th(y))\le(1-t)g(h(x))+tg(h(y))$
+5. 正凹函数的倒数：若 $h$ 凹且 $h(x)>0$，则 $1/h(x)$ 凸。
 
+    令 $z=(1-t)x+ty$，由凹性及正性，再用一元函数 $1/u$ 在 $u>0$ 上的凸性：
+$$
+\frac1{g(z)}
+\le\frac1{(1-t)g(x)+tg(y)}
+\le\frac{1-t}{g(x)}+\frac{t}{g(y)}.
+$$
+6. 求和：若 $f_1,f_2$ 凸，则 $f_1+f_2$ 凸。
 
+绝对值和范数在某些点不可微，但仍然是凸函数。前面的梯度形式 KKT 适用于可微问题，不可微问题需要使用次梯度，或引入辅助变量改写。
+
+#### Sublevel set theorem 下水平集
+
+若 $f$ 在凸集 $S$ 上为凸函数，则任意下水平集都是凸集：
+
+$$
+S_\gamma=\{x\in S:f(x)\le\gamma\},\qquad\gamma\in\mathbb R.
+$$
+
+**证明**：取 $x_1,x_2\in S_\gamma$，则：
+
+$$
+f(\alpha x_1+(1-\alpha)x_2)
+\le\alpha f(x_1)+(1-\alpha)f(x_2)
+\le\gamma.
+$$
+
+所以线段上的点仍在 $S_\gamma$ 内。
+
+这个结论说明了为什么凸规划要求不等式约束写成**凸函数小于等于零**：每条 $g_i(x)\le0$ 都定义一个凸集，取交集后可行域仍然凸。等式约束采用仿射函数 $h_j(x)=a_j^Tx+b_j=0$，定义的超平面也是凸集。
+
+> **凸函数的等式约束不一定给出凸集**，例如 $x_1^2+x_2^2-1=0$ 是圆周。下水平集凸也不能反推函数凸，例如 $x^3$ 在 $\mathbb R$ 上的下水平集都是区间，但函数本身不是凸函数。
+
+#### Standard form 凸规划标准型
+
+$$
+\begin{aligned}
+\min_x\quad &f(x)\\
+\text{s.t.}\quad &g_i(x)\le0,\qquad i=1,\ldots,m,\\
+&h_j(x)=a_j^Tx+b_j=0,\qquad j=1,\ldots,p.
+\end{aligned}
+$$
+
+其中 $f,g_i$ 是凸函数，共同定义域为凸集，$h_j$ 是仿射函数。极大化时将目标换成凹函数，约束的要求保持不变。LP 的目标和约束都是仿射的，因此是凸规划的特例。线性目标 $c^Tx$ 是仿射函数，所以是凸函数。线性不等式 $a_i^Tx\le b_i$ 移项为 $g_i(x)=a_i^Tx-b_i\le0$，其中 $g_i$ 凸。线性等式 $a_j^Tx=b_j$ 本来就是仿射等式。
+
+**局部最优就是全局最优**：假设局部极小点 $x^*$ 不是全局极小点，则存在可行点 $y$ 使 $f(y)<f(x^*)$。对任意充分小的 $t\in(0,1)$，点 $x_t=(1-t)x^*+ty$ 仍然可行，并且：
+
+$$
+f(x_t)\le(1-t)f(x^*)+tf(y)<f(x^*).
+$$
+
+但 $x_t$ 可以任意靠近 $x^*$，与局部最优矛盾。
+
+**唯一性**：凸规划的最优解集合是凸集，可能包含多个点。若目标严格凸且最优解存在，则最优解唯一，因为两个不同最优解的中点会产生更小的目标值。凸性本身也不保证最优解存在，例如 $\min_{x\in\mathbb R}e^x$ 的下确界为 $0$，却无法取到。
+
+#### KKT 与全局最优的关系
+
+沿用前面的符号约定：
+
+$$
+L(x,\lambda,\nu)=f(x)-\sum_i\lambda_i g_i(x)-\sum_j\nu_j h_j(x),
+\qquad\lambda_i\le0,\quad\nu_j\in\mathbb R.
+$$
+
+对于可微凸规划，**满足 KKT 是全局最优的充分条件**。固定 KKT 乘子 $(\lambda^*,\nu^*)$ 后，$-\lambda_i^*\ge0$，所以 $L$ 关于 $x$ 是凸函数。由平稳性($\nabla_xL(x^*,\lambda^*,\nu^*)=0$)，$x^*$ 全局最小化这个 $L$；再由可行性和互补松弛，对任意可行点 $x$：
+
+$$
+f(x)\ge L(x,\lambda^*,\nu^*)
+\ge L(x^*,\lambda^*,\nu^*)=f(x^*).
+$$
+
+因此不需要再用二阶条件筛选这个 KKT 点。
+
+**必要性仍需要约束资格条件（constraint qualification）**。例如，若 $f,g_i$ 在 $\mathbb R^n$ 上凸且可微，并存在严格可行点：
+
+$$
+g_i(\bar x)<0,\qquad h_j(\bar x)=0,
+$$
+
+即满足 **Slater condition（Slater 条件）**，则每个最优解都存在满足 KKT 的乘子。此时 KKT 才是全局最优的充要条件。一般定义域下，严格可行点应在共同定义域的相对内部寻找。
+
+> 为什么不能省略正则性？考虑 $\min x$，约束 $x^2\le0$。唯一可行点 $x=0$ 当然最优，但约束梯度为 $0$，平稳方程 $1-\lambda\cdot0=0$ 无解。这个问题是凸规划，却不满足 Slater 条件，也不存在 KKT 乘子。
+
+#### Convex programming applications 凸规划应用
+
+一些凸规划的例子，主要是如何把实际的问题变成凸规划
+
+##### Optimal input design 最优输入设计
+
+线性动态系统的输出由输入与冲激响应的卷积给出：
+
+$$
+y(t)=\sum_{\tau=0}^t h(\tau)u(t-\tau),\qquad t=0,\ldots,N.
+$$
+
+给定 $h$ 和期望输出 $y_{\rm des}$，选择输入 $u(0),\ldots,u(N)$，同时考虑跟踪误差、输入大小和输入变化：
+
+$$
+\begin{aligned}
+J_{\rm track}&=\sum_{t=0}^N(y(t)-y_{\rm des}(t))^2,\\
+J_{\rm mag}&=\sum_{t=0}^Nu(t)^2,\\
+J_{\rm der}&=\sum_{t=0}^{N-1}(u(t+1)-u(t))^2.
+\end{aligned}
+$$
+
+用非负权重把多个目标合成一个目标：
+
+$$
+\min_u\ J_{\rm track}+\delta J_{\rm der}+\eta J_{\rm mag},
+\qquad\delta,\eta\ge0.
+$$
+
+输出关于输入线性，各项都是仿射函数的平方和，所以这是凸二次问题，也可以写成正则化最小二乘。增大 $\eta$ 会更重视减小输入能量，增大 $\delta$ 会更重视输入平滑，需要在跟踪精度和输入代价之间做权衡（trade-off）。
+
+##### Signal reconstruction 信号重建
+
+已知带噪观测 $x_{\rm cor}=x+v$，希望估计原信号 $x$。重建变量记为 $\hat x$，一方面要接近观测，另一方面要满足平滑等先验要求：
+
+$$
+\min_{\hat x}\ \|\hat x-x_{\rm cor}\|_2^2+\rho\phi(\hat x),
+\qquad\rho\ge0.
+$$
+
+这里用平方误差衡量与观测的偏差，用正则项表达平滑要求。若 $\phi$ 凸，则整个问题凸。常用两种正则项：
+
+$$
+\phi_{\rm quad}(\hat x)=\sum_{i=1}^{n-1}(\hat x_{i+1}-\hat x_i)^2,
+\qquad
+\phi_{\rm tv}(\hat x)=\sum_{i=1}^{n-1}|\hat x_{i+1}-\hat x_i|.
+$$
+
+- **Quadratic smoothing（二次平滑）**：对相邻差分取平方，会较重地惩罚大跳变，去噪时也容易把真实的突变抹平。
+- **Total variation（TV，全变差）**：惩罚差分的绝对值，更容易得到分段平坦、保留明显边缘的信号。
+
+$\rho$ 越大越重视正则项，但不代表越接近真实信号。正则项表达的是我们对信号结构的假设。
+
+##### Robust approximation 鲁棒逼近
+
+普通逼近问题 $\min_x\|Ax-b\|$ 假设 $A$ 已知。若 $A$ 本身有误差，可以采用两种模型：
+
+$$
+\begin{aligned}
+\text{随机模型： }&\min_x\ \mathbb E\|Ax-b\|,\\
+\text{最坏情形： }&\min_x\ \sup_{A\in\mathcal A}\|Ax-b\|.
+\end{aligned}
+$$
+
+前者优化平均表现，后者优化给定不确定集合 $\mathcal A$ 内的最坏表现。对固定 $A$，范数关于 $x$ 凸，期望和逐点上确界也保持凸性。不过，能否高效计算还取决于概率分布和不确定集合的结构。
+
+**Stochastic robust LS（随机鲁棒最小二乘）**：设
+
+$$
+A=\bar A+U,\qquad\mathbb E[U]=0,\qquad
+P=\mathbb E[U^TU]\succeq0.
+$$
+
+展开平方，交叉项的期望为零：
+
+$$
+\begin{aligned}
+\mathbb E\|Ax-b\|_2^2
+&=\|\bar Ax-b\|_2^2+x^TPx\\
+&=\|\bar Ax-b\|_2^2+\|P^{1/2}x\|_2^2.
+\end{aligned}
+$$
+
+因此可以转化为确定性的正则化最小二乘。当 $P=\delta I$ 时：
+
+$$
+\min_x\ \|\bar Ax-b\|_2^2+\delta\|x\|_2^2,
+\qquad\delta\ge0,
+$$
+
+这就是 Tikhonov 正则化。不确定性越大的方向，会受到越大的惩罚。
+
+**Worst-case robust LS（最坏情形鲁棒最小二乘）**：考虑球形参数不确定集：
+
+$$
+\mathcal A=\left\{\bar A+\sum_{k=1}^p u_kA_k:\|u\|_2\le1\right\}.
+$$
+
+记 $M(x)=[A_1x\ \cdots\ A_px]$、$q(x)=\bar Ax-b$，则模型为：
+
+$$
+\min_x\ \sup_{\|u\|_2\le1}\|M(x)u+q(x)\|_2^2.
+$$
+
+利用这个球约束二次子问题的强对偶性，可以等价写成 **semidefinite programming（SDP，半定规划）**：
+
+$$
+\begin{aligned}
+\min_{x,t,\beta}\quad &t+\beta\\
+\text{s.t.}\quad &
+\begin{bmatrix}
+I&M(x)&q(x)\\
+M(x)^T&\beta I&0\\
+q(x)^T&0&t
+\end{bmatrix}\succeq0.
+\end{aligned}
+$$
+
+这里 $\succeq0$ 表示整个对称矩阵半正定，不是逐个元素非负。矩阵各项关于决策变量仿射，因此这是凸约束。这个等价形式依赖于上述不确定集，不能直接套到任意鲁棒模型上。
+
+##### Maximum likelihood estimation 最大似然估计
+
+给定观测 $y$，从参数化概率密度族 $p_x(y)$ 中估计参数 $x$：
+
+$$
+\max_{x\in C}\ l(x),\qquad l(x)=\log p_x(y).
+$$
+
+若参数集合 $C$ 是凸集，且固定 $y$ 后 $l(x)$ 关于 $x$ 是凹函数，则最大似然估计是凸优化问题。
+
+对于线性测量模型：
+
+$$
+y_i=a_i^Tx+v_i,\qquad i=1,\ldots,m,
+$$
+
+若噪声 $v_i$ 独立同分布（IID），密度为 $p(z)$，则：
+
+$$
+p_x(y)=\prod_{i=1}^m p(y_i-a_i^Tx),\qquad
+l(x)=\sum_{i=1}^m\log p(y_i-a_i^Tx).
+$$
+
+因此，噪声分布决定了应当最小化哪一种残差损失。记 $A$ 的第 $i$ 行为 $a_i^T$：
+
+| 噪声模型 | 最大似然对应的问题 |
+| --- | --- |
+| Gaussian：$v_i\sim\mathcal N(0,\sigma^2)$，$\sigma>0$ 已知 | $\min_x\lVert Ax-y\rVert_2^2$，最小二乘 |
+| Laplace：$p(z)=\frac1{2a}e^{-\lvert z\rvert/a}$，$a>0$ 已知 | $\min_x\lVert Ax-y\rVert_1$，绝对误差之和 |
+| Uniform：$v_i\sim U[-a,a]$，$a>0$ 已知 | 找到满足 $\lvert a_i^Tx-y_i\rvert\le a$ 的任意可行点 |
+
+高斯噪声的对数似然去掉常数后为 $-\frac1{2\sigma^2}\sum_i(a_i^Tx-y_i)^2$；Laplace 噪声则为 $-\frac1a\sum_i|a_i^Tx-y_i|$。均匀噪声在可行域内的似然相同，在域外为零，所以不需要在可行点之间继续比较大小。
+
+##### Placement and facility location 布局与设施选址
+
+设节点位置 $x_i\in\mathbb R^2$ 或 $\mathbb R^3$，部分位置固定，其余位置作为决策变量。对连接集合 $\mathcal E$，最小化总连接代价：
+
+$$
+\min_{\{x_i:\ i\text{ 为自由节点}\}}\quad
+\sum_{(i,j)\in\mathcal E}h(\|x_i-x_j\|_2).
+$$
+
+若 $h$ 在 $[0,\infty)$ 上凸且单调不减，则每一项都是凸函数，固定部分节点位置又是仿射约束，因此整个布局问题是凸规划。
+
+取 $h(z)=z,z^2,z^4$，分别最小化总长度、长度平方和、长度四次方和。高次幂对长连接施加更重的惩罚，会改变最优布局。节点可以代表工厂、仓库，也可以代表芯片中的单元，连接代价分别对应运输费用或布线长度。
 
 ## Appendix
 ### A 单纯形法定理证明
