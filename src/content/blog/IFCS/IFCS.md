@@ -347,7 +347,7 @@ Checker shadow illusion 中，A、B 两个方格可以具有相同的像素值�
 
 #### Perceptual constancy in VLMs
 
-课件引用的实验显示，Vision-Language Models 的知觉恒常性仍明显落后于人类：模型在形状恒常性上相对较好，但在大小恒常性和颜色恒常性上更容易受图像表面特征影响。
+一项实验显示，Vision-Language Models 的知觉恒常性仍明显落后于人类：模型在形状恒常性上相对较好，但在大小恒常性和颜色恒常性上更容易受图像表面特征影响。
 
 例如，模型可能正确理解远处的栈桥只是因为透视而显得更窄，却把绿色光照下魔方中央方块的表面颜色直接回答成绿色，而不能恢复其真实颜色。
 
@@ -471,7 +471,7 @@ $$
 
 Gaze-VLM 使用人类 gaze heatmap 指导模型学习图像 patch 的注意分布：训练时使模型 attention 接近人的注视位置，测试时则不再需要眼动输入。
 
-在课件展示的 Ego4D 实验中：
+在 Ego4D 实验中：
 
 | Task | Baseline | Gaze-guided |
 | --- | ---: | ---: |
@@ -482,7 +482,7 @@ Gaze-VLM 使用人类 gaze heatmap 指导模型学习图像 patch 的注意分�
 
 #### Human fixation guides reading comprehension
 
-课件还介绍了用人类阅读注视模式监督 decoder attention 的研究：
+人类阅读时的注视模式也可以用来监督 decoder attention：
 
 1. 让读者先阅读段落，再看到问题；
 2. 统计回答正确的读者在每个词上的平均停留时间；
@@ -853,7 +853,7 @@ CNN 是计算机视觉中经典的层级视觉模型。
 * 中间：逐层形成越来越复杂的 representation
 * 后面：fully connected / classifier，完成具体任务
 
-具体内容可以见课件/深度学习笔记
+具体内容可以见课程资料和深度学习笔记
 
 ### ConvNets and Visual Systems
 
@@ -1058,7 +1058,7 @@ Ellis & Young（1988）用多个功能模块描述 spoken word perception and pr
 | Speech output lexicon 言语输出词典 | 提供已存储的口语输出形式 |
 | Phoneme level 音素反应缓冲器 | 暂时保持说出声音所需的信息 |
 
-Phoneme（音位）是能够区分词义的最小语音单位。课件用普通话不送气的 /p/（如“爸”）与送气的 /pʰ/（如“怕”）说明：这种语音差异可以区分词义。phoneme 严格说是“音位”，phone 是实际发出的“音素”。
+Phoneme（音位）是能够区分词义的最小语音单位。例如，普通话不送气的 /p/（如“爸”）与送气的 /pʰ/（如“怕”）说明：这种语音差异可以区分词义。phoneme 严格说是“音位”，phone 是实际发出的“音素”。
 
 Semantic system 是功能层面的抽象，不要求大脑中存在一个独立、集中的“词义盒子”。它也可能由分布式表征实现，可以类比 semantic embeddings。
 
@@ -1163,8 +1163,8 @@ Prosody 关注语调、节奏等跨越单个音素的结构。主要涉及：
 
 Intonation 是 $F_0$ 随时间的升降模式。
 
-* 句尾 $F_0$ 上升：课件中用于说明英语 yes–no question 的 question rise
-* 句尾 $F_0$ 下降：课件中用于说明 statement 的 final fall
+* 句尾 $F_0$ 上升：英语 yes–no question 常见的 question rise
+* 句尾 $F_0$ 下降：英语 statement 常见的 final fall
 
 这是一种典型例子，具体语调仍取决于语言和语境，不能把所有问句都等同于升调。
 
@@ -1200,10 +1200,10 @@ $$
 f_s>2f_{\max}
 $$
 
-课件用语音信息主要位于 10 kHz 以下作估算，因此对应约 20 kHz 的理论最低采样率；实际系统还需要给滤波留出余量。
+如果按语音信息主要位于 10 kHz 以下估算，则理论最低采样率约为 20 kHz；实际系统还需要给滤波留出余量。
 
 * Traditional landline telephony：8 kHz 采样，能保留的频带上限低于 4 kHz
-* 课件列出的常见在线视频音频采样率：48 kHz
+* 常见的在线视频音频采样率：48 kHz
 
 采样率决定时间上记录得多密，并不等于声音本身的频率。
 
@@ -1234,7 +1234,7 @@ F(x)=\operatorname{sgn}(x)\frac{\ln(1+\mu|x|)}{\ln(1+\mu)},
 \qquad -1\le x\le1
 $$
 
-课件中的 8-bit 情况采用 $\mu=255$。
+μ-law 的 8-bit 编码通常采用 $\mu=255$。
 
 曲线在 $x$ 接近 0 时较陡，因此在压缩后的数值上均匀量化，相当于给原始小幅度信号更细的分辨率，给大幅度信号更粗的分辨率。
 
@@ -1250,7 +1250,7 @@ $$
 F_0=\frac{1}{T_0}
 $$
 
-课件波形在约 38.75 ms 内显示约 10 个周期，因此估算：
+例如，一个波形在约 38.75 ms 内出现约 10 个周期，因此可以估算：
 
 $$
 F_0\approx\frac{10}{0.03875}\approx258\ \mathrm{Hz}
@@ -1291,7 +1291,7 @@ L_p=10\log_{10}\left(\frac{\frac{1}{N}\sum_i x_i^2}{p_0^2}\right)
 =20\log_{10}\left(\frac{p_{\mathrm{rms}}}{p_0}\right)
 $$
 
-这里把课件的功率表达与前面的 SPL 定义统一，避免将“声压”直接与“声压平方”相比。若 $x_i$ 只是未校准的数字音频幅度，也不能直接把计算结果当作实际 dB SPL。
+这里把均方声压的表达与前面的 SPL 定义统一，避免将“声压”直接与“声压平方”相比。若 $x_i$ 只是未校准的数字音频幅度，也不能直接把计算结果当作实际 dB SPL。
 
 #### Pitch & Mel Scale 音高与梅尔标度
 
@@ -1319,13 +1319,13 @@ $$
 
 * 元音通常较长、较响，并呈现较规则的周期性。
 * Stop consonants（塞音）可能出现接近静音的闭塞阶段，随后出现短暂的 burst（爆破）。
-* 课件用 “baby” 中的两个 [b] 展示闭塞与释放的波形变化。
+* 例如，“baby” 中的两个 [b] 可以用来观察闭塞与释放的波形变化。
 
 但仅看时间波形，很难清楚判断复杂声音中包含哪些频率，因此需要转到 frequency domain（频域）。
 
 #### Fourier Analysis 傅里叶分析
 
-复杂信号可以分解为不同频率、幅度和相位的正弦成分。课件中的简单例子：
+复杂信号可以分解为不同频率、幅度和相位的正弦成分。例如：
 
 $$
 y(t)=A_1\sin(2\pi f_1t)+A_2\sin(2\pi f_2t)
@@ -1336,7 +1336,7 @@ $$
 * Waveform：不同成分叠加后，随时间如何变化
 * Spectrum 频谱：有哪些频率，各自的幅度有多大
 
-课件还展示了约 234 Hz 的主要周期，以及约 $4\times234=936\ \mathrm{Hz}$ 的更快振荡成分，并通过 discrete Fourier transform（DFT）得到频谱。
+例如，一个信号的主要周期约为 234 Hz，还包含约 $4\times234=936\ \mathrm{Hz}$ 的更快振荡成分；可以通过 discrete Fourier transform（DFT）得到它的频谱。
 
 #### Spectrogram 声谱图
 
@@ -1359,7 +1359,7 @@ Spectrogram 在二维图上同时表达三个量：
 | 纵轴 | Frequency |
 | 深浅 / 颜色 | Amplitude 或 power，常取对数 |
 
-课件的灰度图中，较深的位置表示更强的频率成分。
+灰度声谱图中，较深的位置表示更强的频率成分。
 
 #### Formants 共振峰
 
@@ -1408,7 +1408,7 @@ $$
 
 #### Whisper Architecture
 
-课件以 Whisper 说明 Transformer encoder–decoder 如何用于语音识别：
+Whisper 展示了 Transformer encoder–decoder 如何用于语音识别：
 
 ![Whisper Encoder–Decoder Architecture](auditory/whisper.png)
 
@@ -1424,7 +1424,7 @@ $$
 
 TTS 的任务方向与 ASR 相反：输入文字，输出语音。
 
-课件介绍的一类方法把语音生成转化为离散 audio tokens 的序列建模：
+一类方法把语音生成转化为离散 audio tokens 的序列建模：
 
 1. 使用 audio codec（音频编解码器）的 encoder，把语音转换为离散 audio tokens。
 2. 用 text tokenizer 得到 text tokens。
@@ -1438,7 +1438,7 @@ $$
 \rightarrow\text{Speech Waveform}
 $$
 
-课件中的 VALL-E 示意图还加入了一小段参考录音作为 prompt，以提供说话人的声音特征，生成个性化语音。
+VALL-E 还使用一小段参考录音作为 prompt，以提供说话人的声音特征，生成个性化语音。
 
 > Q：Audio token 就是音素吗？
 >
@@ -1475,7 +1475,7 @@ Wernicke's aphasia 属于 fluent aphasia（流利性失语）：
 
 #### Language Centers 语言中枢
 
-语言加工涉及多个脑区，而不只是某一个点。课件示意图包括：
+语言加工涉及多个脑区，而不只是某一个点。相关脑区包括：
 
 * Broca's area 布罗卡区
 * Wernicke's area 韦尼克区
@@ -1485,11 +1485,36 @@ Wernicke's aphasia 属于 fluent aphasia（流利性失语）：
 
 ![Language Centers 语言相关脑区](syntax/language_centers.png)
 
-课件按运动性、听觉性和视觉性语言功能进行介绍，可以和上一节的听觉输入、语义理解、言语输出模块联系起来理解。但认知模型中的一个功能模块，不必与某一个脑区逐一对应。
+这些脑区参与运动性、听觉性和视觉性的语言功能，可以和上一节的听觉输入、语义理解、言语输出模块联系起来理解。但认知模型中的一个功能模块，不必与某一个脑区逐一对应。
 
 > Q：能流利说话，就代表理解和表达意义都正常吗？
 >
 > A：不代表。流畅度、词义理解和表达内容可以发生分离，这也是失语症病例对研究语言加工的重要意义。
+
+#### Aphasia and Syntax 失语症与句法结构
+
+句法树可以用来比较两类患者表达中的结构差异。
+
+Fluent aphasia 的例子：
+
+```text
+Patient: they took the time in that time here
+Comparison: they took the train in that town yesterday
+```
+
+两句话可以保留相近的句法骨架：主语、动词、宾语、介词短语和状语仍然出现，但词语选择和整体意义发生变化。这说明保留一定的句法结构，不等于能够正确表达意义。
+
+Expressive aphasia 的例子：
+
+```text
+Patient: father and Peter H. ... hospital, Monday, teeth
+Comparison: father and Peter visited the hospital on Monday
+```
+
+患者的输出主要剩下分散的词或名词短语；对照句则通过 visited、the、on 等成分，把人物、地点和时间组织成完整句子。
+
+从句法层面看，两类困难可以有所不同：一类表达仍较流畅，词语之间可以保留部分结构；另一类难以把词组组织成完整的句子。这是两个病例的对比，不表示每位患者都会出现完全相同的表现。
+
 
 ### Part-of-Speech Tagging 词性标注
 
@@ -1532,7 +1557,7 @@ DET   NOUN  VERB    DET     NOUN
 
 #### POS in Chinese 中文词性
 
-中文同样有名词、动词、形容词、数词、代词、介词、连词等类别。课件特别列出：
+中文同样有名词、动词、形容词、数词、代词、介词、连词等类别。其中还包括：
 
 * 量词（measure words）：如“个、条、张”；动量词如“次、遍、趟”。
 * 结构助词：如“的、地、得”。
@@ -1558,7 +1583,7 @@ VA    DEC  NN    NN    VV    AS  VA    DEC  NN
 
 Type 是不同词形的种类，token 是实际文本中每一次出现的词。一个词只计为一种 type，却可以在文本中出现很多次。
 
-例如 love 在不同句子中可以是名词或动词。课件的 “Love loves to love love.” 展示了同一词形在不同位置承担不同语法作用。
+例如 love 在不同句子中可以是名词或动词。“Love loves to love love.” 展示了同一词形在不同位置承担不同语法作用。
 
 > Q：大多数词都没有歧义，为什么词性标注仍然需要上下文？
 >
@@ -1566,7 +1591,7 @@ Type 是不同词形的种类，token 是实际文本中每一次出现的词。
 
 #### Baseline and Tagging Accuracy
 
-课件引用的英语结果中，POS tagging 的 tag accuracy 约为 97%，而 most frequent class baseline 已经约为 92%。
+在一项英语词性标注评估中，POS tagging 的 tag accuracy 约为 97%，而 most frequent class baseline 已经约为 92%。
 
 Baseline 的做法：
 
@@ -1579,23 +1604,27 @@ $$
 \hat t(w)=\arg\max_t\operatorname{Count}(w,t)
 $$
 
-这个方法不看当前上下文，但仍然可以取得较高准确率，因此评估模型时必须与 baseline 比较。课件还指出，在所引用的英语任务中，HMM、CRF、BERT 等方法的表现相近。
+这个方法不看当前上下文，但仍然可以取得较高准确率，因此评估模型时必须与 baseline 比较。在这项英语任务中，HMM、CRF、BERT 等方法的表现相近。
 
-这些是课件引用的特定任务和数据结果，不是所有语言、领域或语料上的固定上限。
+这些结果来自特定任务和数据，不是所有语言、领域或语料上的固定上限。
 
 中文部分列出的现代汉语结果约为 94–97 F1。注意 F1 与前面的 tag accuracy 不是同一个指标，也不能直接把这些结果推广到古汉语。
 
 “老吾老，以及人之老”和“五亩之宅，树之以桑”：古汉语存在不同的词类用法。“老吾老”中第一个“老”可按动词性用法理解，“树之以桑”的“树”表示种植，机械地全部标为名词就会出错。
 
-### Syntax and Constituency 句法与成分
+### Syntactic Parsing 句法解析
+
+从词性到成分、文法、解析算法与消歧：先描述允许的结构，再计算可能的树，最后比较候选树的概率。
+
+#### Syntax and Constituency 句法与成分
 
 Syntax 研究词如何排列、组合成句子。POS 只描述每个词属于什么类别，句法分析还要描述词之间如何形成结构。
 
-#### Constituency 成分结构
+##### Constituency 成分结构
 
 一组词如果在语法上作为一个整体发挥作用，就可以构成 constituent（成分）。
 
-课件列出的 noun phrases（NP，名词短语）包括：
+Noun phrases（NP，名词短语）可以包括：
 
 * the Broadway coppers
 * three parties from Brooklyn
@@ -1611,9 +1640,9 @@ they sit ...
 
 所以句法结构不是简单的“第几个词是什么词性”，还需要识别哪些词可以组合成同一个单位。单个代词也可以占据 NP 的位置。
 
-#### Evidence for Constituency 成分的证据
+##### Evidence for Constituency 成分的证据
 
-课件用移动位置说明 “on February 2nd” 是一个 prepositional phrase（PP，介词短语）：
+可以通过移动位置来判断 “on February 2nd” 是否构成一个 prepositional phrase（PP，介词短语）：
 
 ```text
 On February 2nd, I'd like to fly from Shanghai to Osaka.
@@ -1629,24 +1658,24 @@ I'd like to fly from Shanghai to Osaka on February 2nd.
 
 就破坏了原来的结构。这里句首的 `*` 是语言学中标记不合语法表达的符号。
 
-#### Basic Terminology
+##### Basic Terminology
 
 * Phrase：短语 / 词组
 * Noun Phrase，NP：名词短语
 * Verb Phrase，VP：动词短语
 * Prepositional Phrase，PP：介词短语
 * Proper Noun：专有名词
-* Nominal：课件语法中用于组织名词性结构的非终结符
+* Nominal：这套语法中用于组织名词性结构的非终结符
 
-### Context-Free Grammar 上下文无关文法
+#### Context-Free Grammar 上下文无关文法
 
 CFG 也称 phrase-structure grammar（短语结构文法），用一组 rules / productions（规则 / 产生式）描述符号如何组合和排列。
 
-课件将这一形式化方向与 Wundt、Chomsky，以及计算机科学中的 Backus、Naur 等人的工作联系起来。
+这一形式化方向与 Wundt、Chomsky，以及计算机科学中的 Backus、Naur 等人的工作有关。
 
-#### Rules and Symbols
+##### Rules and Symbols
 
-课件中的基本规则：
+例如，基本规则可以写成：
 
 ```text
 NP → Det Nominal
@@ -1678,7 +1707,7 @@ $$
 >
 > A：每条产生式的左侧是一个非终结符，对它的改写不要求检查左右相邻符号。例如只要使用 `NP → Det Nominal`，就可以展开 NP。“上下文无关”说的是规则形式，不是说理解自然语言不需要语境。
 
-#### Hierarchical Embedding & Recursion
+##### Hierarchical Embedding & Recursion
 
 一个非终结符可以展开成其他非终结符，因此规则可以层层嵌套。
 
@@ -1693,7 +1722,7 @@ Nominal
 
 这里还需要词汇规则 `Noun → morning | flight`。有限的规则通过递归可以描述长度不断增加的结构，但并不保证每一种生成结果在语义上都自然。
 
-#### Generating a Phrase
+##### Generating a Phrase
 
 从 NP 开始，可以生成 a flight：
 
@@ -1707,9 +1736,9 @@ $$
 
 整个推导过程可以表示成 parse tree（句法树）。树中的父节点支配其下方的后代节点，这种关系称为 domination。
 
-#### Sentence-level Rules
+##### Sentence-level Rules
 
-课件进一步加入：
+进一步加入句子级的规则：
 
 ```text
 S → NP VP
@@ -1724,7 +1753,7 @@ PP → Preposition NP
 * `VP → Verb PP`：动词后接介词短语，如 leaving on Thursday。
 * `PP → Preposition NP`：介词后接名词短语，如 from Los Angeles。
 
-ATIS（Air Travel Information System）语料中的例子主要围绕航空出行请求。课件用这套简化语法生成：
+ATIS（Air Travel Information System）语料中的例子主要围绕航空出行请求。这套简化语法可以生成：
 
 ```text
 I prefer a morning flight
@@ -1732,7 +1761,7 @@ I prefer a morning flight
 
 生成时从 S 出发，逐步选择规则、展开非终结符，直到只剩下终结符。Parsing 则从给定句子出发，寻找符合语法的结构分析。
 
-#### Parse Tree & Bracketed Notation
+##### Parse Tree & Bracketed Notation
 
 ![Constituency Parse Tree 成分句法树](syntax/constituency_tree.png)
 
@@ -1757,7 +1786,7 @@ I prefer a morning flight
 
 因此，句子既有线性顺序，也有层级结构。
 
-#### Grammaticality 语法性
+##### Grammaticality 语法性
 
 相对于一套指定语法：
 
@@ -1766,17 +1795,431 @@ I prefer a morning flight
 
 但一套教学用 CFG 只覆盖自然语言的一小部分。不能由这套规则生成，不等于真实语言中一定不合语法；能够生成，也不代表意义合理或表达自然。
 
-### Dependency Grammar 依存语法
+#### Chomsky Normal Form 乔姆斯基标准形式
+
+CFG 描述哪些句子可以被生成，但为了让解析算法更容易实现，可以先统一产生式的形式。
+
+CNF（Chomsky normal form）要求每条规则具有以下两种形式之一：
+
+$$
+A\rightarrow BC
+\qquad\text{or}\qquad
+A\rightarrow a
+$$
+
+* $A,B,C$：非终结符。
+* $a$：终结符，即实际的词。
+* 结构展开时，每个节点分成两个非终结符；词汇展开时，直接得到一个词。
+
+因此，非词汇部分的解析树成为 binary branching tree（二叉分支树），这正好适合后面 CKY 的“两部分合并”。
+
+普通 CFG 可以转换成弱等价（weakly equivalent）的 CNF：生成的字符串集合保持一致，但树形和中间节点可以变化。若文法包含空串，还需要单独处理起始符号生成空串的情况。
+
+##### Conversion to CNF
+
+转换时需要处理三类产生式。
+
+1. **终结符与非终结符混合**：给终结符增加一个中间类别。
+
+```text
+Before:
+INF-VP → to VP
+
+After:
+INF-VP → TO VP
+TO → to
+```
+
+2. **右侧超过两个符号**：引入新的非终结符，把长规则拆成二叉结构。
+
+```text
+Before:
+A → B C D
+
+After:
+A → B X
+X → C D
+```
+
+句子规则也可以这样转换：
+
+```text
+S → Aux NP VP
+
+S → X1 VP
+X1 → Aux NP
+```
+
+3. **右侧只有一个非终结符**：消除 unit productions（单元产生式），把最终能得到的非单元展开直接接过来。
+
+```text
+Before:
+Nominal → Noun
+Noun → book | flight
+
+After:
+Nominal → book | flight
+Noun → book | flight
+```
+
+这里 `Nominal → Noun` 不符合 CNF，而 `Nominal → flight` 符合：前者右侧是一个非终结符，后者右侧是一个终结符。
+
+![CFG to CNF 文法转换示例](syntax/cnf_conversion.png)
+
+转换后的文法中，`S → book`、`VP → book` 等词汇规则可能来自 `S → VP → Verb → book` 这样的单元规则链，并不是把 book 的词性直接认定为“句子”。
+
+还可以用 `VP → VP PP` 的递归形式替代不断列举多个 PP 的规则，说明文法可以紧凑地表示重复结构。但递归规则本身不等于 CNF 转换，“转为 CNF”也不保证规则总数一定更少。
+
+#### Structural Ambiguity 结构歧义
+
+同一个句子可能对应不止一棵解析树。Structural ambiguity 指的是结构分析有多种可能，而不只是某个词有多个词义。例：
+
+```text
+I shot an elephant in my pajamas.
+```
+
+其中 `in my pajamas` 是 PP，可以附着在不同位置：
+
+* NP attachment：修饰 elephant，表示“大象穿着我的睡衣”。
+* VP attachment：修饰 shot，表示“我穿着睡衣射击大象”。
+
+```text
+NP attachment:
+[VP shot [NP an elephant [PP in my pajamas]]]
+
+VP attachment:
+[VP [VP shot [NP an elephant]] [PP in my pajamas]]
+```
+
+![PP-attachment Ambiguity 介词短语附着歧义](syntax/pp_attachment.png)
+
+这些词的顺序、词性都可以相同，但结构和意义不同。因此，只完成 POS tagging 还不能解决句法歧义，需要找到候选树，并进一步决定哪种分析更合理。
+
+#### Dynamic Programming for Parsing
+
+如果对每一种规则选择都重新展开整棵树，会反复计算相同的局部结构。
+
+Dynamic programming（DP，动态规划）的思路：
+
+1. 先求较短片段可以构成哪些成分。
+2. 把结果存入 parse table（解析表）。
+3. 在更长片段的分析中复用这些结果。
+
+这里依赖 CFG 的 context-free 性质：某个片段已经被识别为某类成分后，后续规则需要这一类别时，就可以使用该结果，不必重新分析该片段内部。
+
+CKY（Cocke–Kasami–Younger）算法就是基于这一思路的自底向上方法，基础版本要求输入文法先转为 CNF。
+
+> Q：动态规划是不是已经解决了歧义，选出了唯一的正确树？
+>
+> A：还没有。它主要解决重复计算，使多个可能结构可以共享局部结果。保留哪些候选结构与最后选哪棵树，是两个问题。
+
+#### CKY Recognition 句法识别
+
+##### Parse Table and Spans
+
+长度为 $n$ 的句子有 $n+1$ 个词边界。使用 $(n+1)\times(n+1)$ 的表格，只填写上三角部分。
+
+下面统一用半开区间 $[i,j)$ 表示边界 i 到 j 之间的词。表格格子记作 `m[i,j]`，其中 i、j 是词边界；半开区间用于明确词的范围。
+
+```text
+0  Book  1  the  2  flight  3  through  4  Houston  5
+```
+
+* $m[0,1]$：Book。
+* $m[1,3]$：the flight。
+* $m[0,3]$：Book the flight。
+* $m[0,5]$：整个句子。
+
+每个格子保存该片段能够构成的非终结符集合，而不是只保存一个标签：
+
+$$
+m[i,j]=\{A\mid A\Rightarrow^*w_i\cdots w_{j-1}\}
+$$
+
+##### Base Case: Single Words
+
+先处理长度为 1 的片段，查找所有词汇规则 $A\rightarrow w_i$：
+
+$$
+m[i,i+1]=\{A\mid A\rightarrow w_i\in R\}
+$$
+
+一个词可以匹配多个类别，这些类别都要保留，不能在初始化阶段随意选定一个。
+
+##### Combining Two Smaller Spans
+
+对于较长片段 $[i,j)$，枚举切分点 $k$：
+
+$$
+[i,j)=[i,k)+[k,j),\qquad i<k<j
+$$
+
+如果文法中有 $A\rightarrow BC$，且 $B\in m[i,k]$、$C\in m[k,j]$，就将 A 加入 $m[i,j]$：
+
+$$
+m[i,j]=\bigcup_{k=i+1}^{j-1}
+\{A\mid A\rightarrow BC\in R,\ B\in m[i,k],\ C\in m[k,j]\}
+$$
+
+这正是需要 CNF 的原因：一个较长成分总能按二叉规则拆成左右两个更小的成分。
+
+##### Example: Book the flight
+
+使用转换后的文法，按片段长度填写：
+
+| Span | 词串 | 格子中的非终结符 |
+| --- | --- | --- |
+| [0,1) | Book | S, VP, Verb, Nominal, Noun |
+| [1,2) | the | Det |
+| [2,3) | flight | Nominal, Noun |
+| [0,2) | Book the | 空集 |
+| [1,3) | the flight | NP |
+| [0,3) | Book the flight | S, VP, X2 |
+
+* `Book the`：没有规则能把两个子片段中的类别组合起来，因此 $m[0,2]=\varnothing$。
+* `the flight`：通过 `NP → Det Nominal` 得到 $m[1,3]=\{NP\}$。
+* `Book the flight`：先枚举两个切分点。
+
+```text
+k = 1: Book | the flight
+k = 2: Book the | flight
+```
+
+第二种切分因为 $m[0,2]$ 为空而不可用。第一种切分可以使用：
+
+```text
+S → Verb NP
+VP → Verb NP
+X2 → Verb NP
+```
+
+所以最终 $m[0,3]=\{S,VP,X2\}$。
+
+![CKY Recognition Table 自底向上的解析表](syntax/cky_table.png)
+
+其中 S 表示完整句子，VP 是动词短语类别，X2 是 CNF 转换引入的中间符号。$S\in m[0,n]$ 时，说明这套文法能够接受整句。
+
+注意区间下标：`Book the` 对应 $m[0,2]$，`the flight` 对应 $m[1,3]$。
+
+##### CKY Algorithm
+
+按右边界 j 逐列填写，伪代码可以写成：
+
+```text
+initialize every m[i,j] as an empty set
+
+for j = 1, ..., n:
+    add all A with A → words[j-1] to m[j-1,j]
+    for i = j-2, ..., 0:
+        for k = i+1, ..., j-1:
+            for each rule A → B C:
+                if B in m[i,k] and C in m[k,j]:
+                    add A to m[i,j]
+
+accept if S in m[0,n]
+```
+
+* j：确定当前处理的右边界。
+* i：从短片段到长片段确定左边界。
+* k：枚举当前片段的切分位置。
+* 最内层：检查哪些规则可以合并左右成分。
+
+这样，当前格子需要的左侧和下方格子都已经算好。
+
+补充复杂度：直接逐条检查二叉规则时，时间复杂度为 $O(n^3|R_{\mathrm{binary}}|)$；固定文法下通常简写为 $O(n^3)$。只存类别集合时，空间为 $O(n^2|N|)$。
+
+#### CKY Parsing 从识别到解析树
+
+前面的 recognizer 只能回答“这个片段能否属于某个类别”。如果同一个类别由多种推导得到，只存集合会丢失它们之间的区别。
+
+Parser 则需要恢复具体的 parse trees，因此需要做两处修改：
+
+1. 为每种推导保存 backpointers（回溯指针），记录使用的规则、切分点和左右子成分。
+2. 同一个格子里的同一个非终结符，允许保存多个推导版本。
+
+例如某个 A 可以保存：
+
+```text
+A at [i,j):
+    rule: A → B C
+    split: k
+    left child:  B at [i,k)
+    right child: C at [k,j)
+```
+
+如果还有另一种规则或另一种 k 也得到 A，必须把这条推导也留下，而不是覆盖前一条。
+
+![CKY Backpointers 指向左右子成分的回溯指针](syntax/cky_backpointers.png)
+
+##### Recovering a Tree
+
+例如：
+
+```text
+Book the flight through Houston
+```
+
+在 $m[0,5]$ 中保存了三种 S 推导：
+
+```text
+S1 → Verb NP
+S2 → VP PP
+S3 → X2 PP
+```
+
+这里 $S_1,S_2,S_3$ 是同一个类别 S 的不同推导记录，不是三种新的文法类别。
+
+选择第一种之后，按指针递归恢复：
+
+```text
+S[0,5) → Verb[0,1) NP[1,5)
+Verb[0,1) → Book
+NP[1,5) → Det[1,2) Nominal[2,5)
+Det[1,2) → the
+Nominal[2,5) → Nominal[2,3) PP[3,5)
+Nominal[2,3) → flight
+PP[3,5) → Preposition[3,4) NP[4,5)
+Preposition[3,4) → through
+NP[4,5) → Houston
+```
+
+![CKY Reconstructed Parse Tree 从表格恢复完整句法树](syntax/cky_reconstructed_tree.png)
+
+这里 `through Houston` 被分析为名词短语内部的一部分。选择另外的 S 推导，就会沿不同指针构建另一种结构。
+
+DP 表格可以共享局部子树的计算，但不意味着完整候选树的数量很少。如果要把所有树逐一输出，总开销仍可能随歧义数量迅速增长。
+
+> Q：为什么表格里已经有一个 S，还需要保留更多 S？
+>
+> A：S 只说明“整段可以构成句子”，没有说明内部结构。多个 S 可能使用不同规则、切分点和子树；只保留类别名，就无法还原这些不同分析。
+
+#### Probabilistic CFG 概率上下文无关文法
+
+基础 CKY 可以返回所有符合文法的树，却没有告诉我们哪一棵更可能。PCFG 在 CFG 的每条产生式上加入概率，用来对候选树排序。
+
+##### Rule Probabilities
+
+对同一个左侧非终结符 A，它的所有展开概率之和为 1：
+
+$$
+\sum_{\beta:\,A\rightarrow\beta\in R}p(A\rightarrow\beta)=1
+$$
+
+例：
+
+```text
+S → NP VP       0.80
+S → Aux NP VP   0.15
+S → VP          0.05
+```
+
+词汇展开也有概率，例如：
+
+```text
+Verb → book     0.30
+Verb → include  0.30
+Verb → prefer   0.40
+```
+
+![PCFG Rules and Lexicon 带概率的文法与词汇规则](syntax/pcfg_rules.png)
+
+实际概率需要根据语料估计；补充一个常用的相对频数估计：
+
+$$
+\hat p(A\rightarrow\beta)=
+\frac{\operatorname{Count}(A\rightarrow\beta)}
+{\sum_{\gamma}\operatorname{Count}(A\rightarrow\gamma)}
+$$
+
+分母统计的是同一个左侧类别 A 的全部展开次数，而不是语料中的所有规则总数。
+
+##### Probability of a Parse Tree
+
+PCFG 假定每次展开的概率由当前非终结符及其所选规则决定。一棵树的概率为各次规则展开概率的乘积：
+
+$$
+p(T)=\prod_{v\in\operatorname{Nonterminals}(T)}
+p\bigl(A_v\rightarrow\beta_v\bigr)
+$$
+
+词汇规则也要乘进去；同一条规则在树中使用多次，就要重复相乘。
+
+对同一个句子 w，从候选树集合 $\mathcal T(w)$ 中选择：
+
+$$
+T^*=\arg\max_{T\in\mathcal T(w)}p(T)
+$$
+
+这里求的是最佳树。补充区分：句子整体的概率需要对所有能生成它的树求和，$p(w)=\sum_{T\in\mathcal T(w)}p(T)$，不是只取最大的那棵。
+
+##### Example: Book the dinner flight
+
+同一句话：
+
+```text
+Book the dinner flight
+```
+
+可能有两种分析：
+
+* 左树：`dinner flight` 是一个名词性结构，表示“预订提供晚餐的航班”。
+* 右树：通过 `VP → Verb NP NP` 把 the dinner 和 flight 分成两个 NP，将其解释为“替 the dinner 预订航班”，结构上允许，但语义很不自然。
+
+![PCFG Alternative Parses 两种候选句法树](syntax/pcfg_alternatives.png)
+
+按算例采用的各项概率：
+
+$$
+\begin{aligned}
+p(T_{\mathrm{left}})
+&=0.05\times0.20\times0.20\times0.20\times0.75\\
+&\quad\times0.30\times0.60\times0.10\times0.40\\
+&=2.16\times10^{-6}
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+p(T_{\mathrm{right}})
+&=0.05\times0.10\times0.20\times0.15\times0.75\times0.75\\
+&\quad\times0.30\times0.60\times0.10\times0.40\\
+&=6.075\times10^{-7}
+\end{aligned}
+$$
+
+所以该算例中左树的概率更高，PCFG 会优先选择左树。
+
+注意两处取值不一致：前面的规则表把 `VP → Verb NP NP` 列为 0.05，右树算例却使用 0.10。上面为便于对照保留算例取值；如果严格按规则表的 0.05 计算，右树概率应为 $3.0375\times10^{-7}$，两棵树的排序不变。
+
+##### Connecting PCFG with CKY
+
+补充把概率评分与动态规划连接起来：若只需要最佳树，可以在格子中为每个类别保存最高概率和相应回溯指针。
+
+设 $V[A,i,j]$ 为 A 生成片段 $[i,j)$ 的最高概率，则二叉规则的递推为：
+
+$$
+V[A,i,j]=\max_{\substack{A\rightarrow BC\in R\\i<k<j}}
+p(A\rightarrow BC)\,V[B,i,k]\,V[C,k,j]
+$$
+
+* Recognition：记录某个类别是否可能出现。
+* Parsing：保存不同推导和指针，恢复候选树。
+* Best-parse search：比较概率，保存最高分的推导。
+
+实际计算时也可以把概率取对数，将连乘改成相加，避免很小的概率不断相乘导致数值下溢。
+
+
+#### Dependency Grammar 依存语法
 
 Constituency 描述词如何组成短语；dependency grammar 直接用词之间的有向语法关系描述句子结构。
 
-#### Head and Dependent
+##### Head and Dependent
 
 * Head 中心词：支配某个依存关系的词。
 * Dependent 依存词：依附于中心词的词。
 * Labeled arc：带有关系标签、从 head 指向 dependent 的有向弧。
 
-课件例句：
+例句：
 
 ```text
 I prefer the morning flight through Denver
@@ -1804,7 +2247,7 @@ ROOT 不是真实发出的词，而是表示整棵依存树起点的符号。具
 
 ### Cognitive Effort in Processing Language
 
-同样合乎语法的句子，理解难度可能不同。课件介绍 locality 和 uniform information density 两种解释思路。
+同样合乎语法的句子，理解难度可能不同。可以从 locality 和 uniform information density 两个角度来解释。
 
 #### Locality of Syntactic Dependencies 句法依赖的局部性
 
@@ -1824,7 +2267,7 @@ The reporter admitted the error.
 * 1a：记者是 attacked 的宾语，意思是“被参议员攻击的记者承认了错误”，属于 object relative clause（宾语关系从句）。
 * 1b：记者是 attacked 的主语，意思是“攻击了参议员的记者承认了错误”，属于 subject relative clause（主语关系从句）。
 
-课件指出，这类英语例子中，1a 通常比 1b 更难处理。
+在这类英语例子中，1a 通常比 1b 更难处理。
 
 ![Dependency Locality 依赖距离与记忆负担](syntax/dependency_locality.png)
 
@@ -1844,7 +2287,7 @@ Locality 的解释：
 
 UID 假说认为，说话者倾向于让信息在表达过程中较均匀地分布，避免局部突然出现过高的信息负荷。
 
-课件例句：
+例如：
 
 ```text
 1a. My boss confirmed we were absolutely crazy.
@@ -1855,7 +2298,7 @@ UID 假说认为，说话者倾向于让信息在表达过程中较均匀地分�
 
 ![Uniform Information Density 信息密度随时间的变化](syntax/uniform_information_density.png)
 
-课件图中，不带 that 的版本在 we 附近出现明显的信息峰值；带 that 的版本把部分结构信息提前表达，使信息分布更平滑。
+上图中，不带 that 的版本在 we 附近出现明显的信息峰值；带 that 的版本把部分结构信息提前表达，使信息分布更平滑。
 
 补充用 surprisal（惊异度）描述一个词带来的信息量：
 
@@ -1865,15 +2308,440 @@ $$
 
 * 上下文中越可预测的词，surprisal 越小。
 * 越出乎预期的词，surprisal 越大。
-* 单位为 bit；课件图纵轴以 bits/word 表示信息密度。
+* 单位为 bit；图中纵轴以 bits/word 表示信息密度。
 
 增加一个功能词虽然让句子变长，却可能降低后面某个位置的信息峰值。UID 因此不等于“越短越好”，也不要求每个词的信息量严格相等。
 
 #### Locality vs. UID
 
-| 理论 | 主要关注 | 课件中的例子 |
+| 理论 | 主要关注 | 例子 |
 | --- | --- | --- |
 | Locality | 依赖之间的距离、尚未完成结构的记忆负担 | 主语 / 宾语关系从句 |
 | UID | 预测难度和信息量是否出现突然的峰值 | 是否加入 that |
 
 二者关注的是不同方面：一个强调结构依赖如何保存在记忆中，另一个强调信息如何随表达展开。它们提供理解加工难度的不同视角，不必视为互斥解释。
+
+
+## Language and Syntax II
+
+上一节用 constituency 和 dependency 两种方式表示句法结构。这一节主要讨论：如何把依存树形式化，以及如何通过一系列 transition actions，从一个句子逐步构建依存树。
+
+### Dependency Relations 依存关系
+
+#### Dependency vs. Constituency
+
+依存语法直接表示词与词之间的 head–dependent relations，不需要先建立 NP、VP 等短语节点。
+
+例如 prefer 和宾语 flight 的关系：
+
+* 在依存树中，可以直接用 `prefer → flight` 表示。
+* 在成分树中，需要经过若干词类和短语节点，才能从 prefer 到达 flight。
+
+![Dependency and Constituency 两种句法表示](syntax2/dependency_constituency.png)
+
+上图中，两词之间的树上路径分别为 1 条边和 7 条边。这是在比较两种表征的结构，不是说两词在原句中的线性距离发生了变化。
+
+#### Modifier Relations 修饰关系
+
+Head 是组织某个局部结构的中心词，dependent 可以承担修饰、主语、宾语等不同功能，并不都只是日常意义上的“修饰语”。
+
+例如：
+
+```text
+the morning flights to Houston
+```
+
+* `flights → the`：det，限定关系。
+* `flights → morning`：这里标作 nmod，名词修饰关系。
+* `flights → Houston`：nmod，表示航班与目的地之间的修饰关系。
+* `Houston → to`：case，介词作为关系标记依附于 Houston。
+
+注意，这种分析中不是 `to → Houston`。介词如何处理取决于依存标注体系，这里采用这种方向和标签。
+
+#### Clausal Relations 从句层面的关系
+
+Clausal relations 描述一个成分相对于 predicate（谓词，常为动词）的句法角色，不一定要求句子中另有一个嵌套从句。
+
+```text
+United canceled the morning flights to Houston
+```
+
+* `canceled → United`：nsubj，主语。
+* `canceled → flights`：obj，直接宾语。
+
+因此，依存弧不仅说明“谁和谁连接”，还需要用 relation label 说明“是什么关系”。
+
+### Graph Formalization of Dependency
+
+#### Directed Graph 有向图
+
+依存结构可以表示为：
+
+$$
+G=(V,A)
+$$
+
+* $V$：节点集合，包括句子中的词以及虚拟 ROOT。
+* $A$：有向弧的集合，方向从 head 指向 dependent。
+
+例如 `ROOT → canceled`、`canceled → United`、`canceled → flights`。
+
+为了同时记录关系标签，下面把一条弧写作 $(h,r,d)$：$h$ 是 head，$r$ 是 relation label，$d$ 是 dependent。
+
+#### Constraints of a Dependency Tree
+
+依存树需要满足：
+
+1. 有一个没有入边的根节点。
+2. 除根节点外，每个节点恰好有一条入边。
+3. 从根节点到其他每个节点都存在唯一的有向路径。
+
+因此：
+
+* 每个词只能有一个 head。
+* 一个词可以有多个 dependents。
+* 所有节点连通，不能形成有向环。
+
+ROOT 是为了表示整棵树而加入的虚拟节点，句子的核心词通过一条弧连接到它。
+
+> Q：有了“每个词一个 head”，是否就一定是一棵树？
+>
+> A：还不够。几个词可以互相连接成环，也可能形成与 ROOT 不连通的部分。还需要从 ROOT 可达、无环等整体约束。
+
+#### Dependency Treebanks 依存树库
+
+Treebank 是带有句法结构标注的语料库，可以用于训练、评估 parser，也可以用于语言学研究。
+
+构建方式包括：
+
+* 人工直接标注。
+* 先由 parser 自动分析，再人工修正。
+* 从 constituency treebank 转换得到 dependency treebank。
+
+Universal Dependencies（UD）是一个跨语言的依存标注项目，包含覆盖 100 多种语言的 200 多个 treebanks。
+
+### Transition-Based Dependency Parsing
+
+这个方法借鉴 shift-reduce parsing：不一次性预测整棵树，而是维护当前状态，每次选择一个动作，逐步构建依存关系。
+
+#### Stack, Buffer and Arcs
+
+用 configuration（配置 / 当前状态）表示解析过程：
+
+$$
+c=(S,B,A)
+$$
+
+* Stack $S$：已经读入、尚未完成归约的词。
+* Buffer $B$：还没有移入栈的词。
+* Arcs $A$：已经建立的依存关系。
+
+![Transition-Based Dependency Parsing 解析框架](syntax2/transition_parser.png)
+
+初始状态：
+
+```text
+S = [ROOT]
+B = [w1, w2, ..., wn]
+A = {}
+```
+
+这个 Arc-standard 系统的终止状态：
+
+```text
+S = [ROOT]
+B = []
+```
+
+一个词从栈中移除后，它与已连接的子树仍保留在 $A$ 中，不是把这些信息从结果里删除。
+
+#### Three Transition Actions
+
+为了避免方向混淆，下面统一把栈写成 `[..., i, j]`，**最右侧的 j 是栈顶，i 是栈顶下面的词**。上图中的 $s_1$ 对应栈顶 j，$s_2$ 对应 i。
+
+| Action | 建立的关系 | 栈的变化 |
+| --- | --- | --- |
+| Shift | 暂不建立弧 | 把 buffer 首词移到栈顶 |
+| Left-Arc(r) | `j → i`，标签为 r | 删除 i，保留 j |
+| Right-Arc(r) | `i → j`，标签为 r | 删除 j，保留 i |
+
+这里的 left / right 是依存弧指向原句左侧还是右侧的词，不是箭头在竖直栈图中朝上还是朝下。
+
+##### Shift 移进
+
+从 buffer 头部取出一个词，压入 stack：
+
+```text
+Before: S = [...],    B = [b, ...]
+After:  S = [..., b], B = [...]
+```
+
+它让解析器继续读词，暂时不决定新的依存关系。
+
+##### Left-Arc 左弧
+
+当前栈顶 j 成为 i 的 head，建立 `j → i`，移除 i：
+
+```text
+Before: [..., the, flight]
+Arc:    flight → the
+After:  [..., flight]
+```
+
+注意删除的是栈顶下面的 dependent，而不是 head。
+
+##### Right-Arc 右弧
+
+i 成为栈顶 j 的 head，建立 `i → j`，移除 j：
+
+```text
+Before: [..., book, me]
+Arc:    book → me
+After:  [..., book]
+```
+
+Left-Arc 和 Right-Arc 都属于 reduce operations（归约操作）：合并栈上的结构，把 dependent 从活动栈中移除。
+
+> Q：为什么连接以后要把 dependent 移除？
+>
+> A：它的 head 已经确定，完成的子树可以归约到 head 上。关键是不能在它还需要连接其他 dependents 时过早移除，否则后续就没有机会完成这些关系。
+
+### Parsing Example: Book me the morning flight
+
+例如：
+
+```text
+Book me the morning flight
+```
+
+目标关系为：
+
+```text
+ROOT → book
+book → me
+book → flight
+flight → the
+flight → morning
+```
+
+下面省略关系标签，集中看动作和状态变化。每一行先给出当前状态，再执行该行的 action：
+
+| Step | Stack | Buffer | Action | Relation Added |
+| --- | --- | --- | --- | --- |
+| 0 | [ROOT] | [book, me, the, morning, flight] | Shift | — |
+| 1 | [ROOT, book] | [me, the, morning, flight] | Shift | — |
+| 2 | [ROOT, book, me] | [the, morning, flight] | Right-Arc | book → me |
+| 3 | [ROOT, book] | [the, morning, flight] | Shift | — |
+| 4 | [ROOT, book, the] | [morning, flight] | Shift | — |
+| 5 | [ROOT, book, the, morning] | [flight] | Shift | — |
+| 6 | [ROOT, book, the, morning, flight] | [] | Left-Arc | flight → morning |
+| 7 | [ROOT, book, the, flight] | [] | Left-Arc | flight → the |
+| 8 | [ROOT, book, flight] | [] | Right-Arc | book → flight |
+| 9 | [ROOT, book] | [] | Right-Arc | ROOT → book |
+| 10 | [ROOT] | [] | Done | — |
+
+最重要的是 Step 6、7：flight 读入以后，先成为 morning 的 head，再成为 the 的 head。两个修饰词都接好后，才把 flight 连接到 book。
+
+补充计算：在这个包含 $n$ 个词的完整解析中，每个词 Shift 一次、作为 dependent 被归约一次，因此共有 $n$ 次 Shift 和 $n$ 次建弧归约，总计 $2n$ 个动作。这里 $n=5$，所以是 10 个动作。
+
+### Training Data from Dependency Trees
+
+#### Oracle 的任务
+
+Oracle 根据当前 configuration 选择下一步动作。可以用监督学习训练一个分类器来实现这一决策模块：
+
+$$
+x=c=(S,B,A),\qquad y=\text{correct transition action}
+$$
+
+训练数据不是只有“句子 $\rightarrow$ 整棵树”，而是要转换为一系列“当前状态 $\rightarrow$ 正确动作”的样本。
+
+需要区分两个阶段：
+
+* 生成训练数据：已知 gold-standard tree，用参考树确定正确动作。
+* 实际解析新句子：不知道正确树，由训练好的模型预测动作。
+
+因此，训练时用于产生标准答案的 oracle 规则，与推理时学习到的决策模型，作用不同。
+
+#### Choosing the Gold Action
+
+设参考树的关系集合为 $A_{\mathrm{gold}}$，当前已经建立的关系为 $A$，栈顶仍写作 `[..., i, j]`。
+
+可以按以下顺序选择：
+
+1. 如果 `j → i` 是参考树中的正确关系，选择 Left-Arc，并使用该关系的标签。
+2. 否则，如果 `i → j` 是正确关系，而且 **j 的所有 dependents 都已经接好**，选择 Right-Arc。
+3. 否则，选择 Shift。
+
+Right-Arc 的第二个条件可以写成：
+
+$$
+\forall(j,r,w)\in A_{\mathrm{gold}},\quad(j,r,w)\in A
+$$
+
+也就是：参考树中由 j 指向子节点的每一条弧，都已经出现在当前关系集合里。
+
+#### Why Not Reduce Too Early?
+
+再用另一个句子说明训练数据的生成过程：
+
+```text
+Book the flight through Houston
+```
+
+参考关系：
+
+```text
+ROOT → book
+book → flight
+flight → the
+flight → Houston
+Houston → through
+```
+
+![Gold Dependency Tree 生成训练数据的参考树](syntax2/training_pairs.png)
+
+当状态变成：
+
+```text
+S = [ROOT, book, flight]
+B = [through, Houston]
+```
+
+虽然 `book → flight` 已经是参考树中的正确弧，但此时 **不能立刻 Right-Arc**：flight 的 dependent Houston 还没有连接。
+
+正确做法是继续 Shift，读入 through 和 Houston，先建立 `Houston → through`，再建立 `flight → Houston`。等 flight 的子节点都接好，才建立 `book → flight` 并移除 flight。
+
+该例的完整动作序列：
+
+```text
+Shift book
+Shift the
+Shift flight
+Left-Arc:  flight → the
+Shift through
+Shift Houston
+Left-Arc:  Houston → through
+Right-Arc: flight → Houston
+Right-Arc: book → flight
+Right-Arc: ROOT → book
+```
+
+> Q：既然一条弧是正确的，为什么还不能马上建立？
+>
+> A：因为建弧同时伴随归约。判断动作是否正确，不只看这条弧本身，还要看移除 dependent 后，是否仍能完成剩余的整棵树。
+
+### Implementing the Oracle: A Neural Classifier
+
+#### Encoder and Configuration Features
+
+一个基本架构：
+
+1. 用 neural encoder 为句子中的词产生向量表征。
+2. 取栈顶两个词和 buffer 首词的表征。
+3. 拼接这些向量。
+4. 用 feedforward network（前馈网络）预测动作。
+
+![Neural Oracle 神经网络动作分类器](syntax2/neural_oracle.png)
+
+补充用公式串起这一过程：
+
+$$
+h_1,\ldots,h_n=\operatorname{Encoder}(w_1,\ldots,w_n)
+$$
+
+$$
+z_c=[h_i;h_j;h_b]
+$$
+
+$$
+p_\theta(a\mid c)=\operatorname{softmax}\bigl(\operatorname{FFN}(z_c)\bigr)_a
+$$
+
+* $i,j$：栈顶下面的词与栈顶词
+* $b$：buffer 首词
+* $[\ ;\ ;\ ]$：向量拼接
+* $a$：候选 transition action
+
+栈或 buffer 中相应位置为空时，需要使用空位置的特殊表征。
+
+#### Features in the Feed-forward Parser
+
+Chen & Manning（2014）的前馈网络中，输入包含 word、POS tag 和 arc label 等特征的表示。
+
+可使用的特征不只三个词，例如：
+
+* 栈顶三个位置的词。
+* Buffer 前三个位置的词。
+* 这些词的 POS tags。
+* 已建立的依存关系及相关节点的信息。
+
+所以模型看到的不只是当前某个词的词义，还包括“解析进行到哪里、哪些结构已经建好”的状态信息。
+
+#### Supervised Objective
+
+训练时可以采用 cross-entropy loss。对于第 $k$ 个配置 $c_k$ 及其正确动作 $a_k^*$：
+
+$$
+\mathcal L(\theta)=-\sum_k\log p_\theta(a_k^*\mid c_k)
+$$
+
+如果同时预测依存标签，输出类别需要区分 `Left-Arc(r)`、`Right-Arc(r)` 和 Shift，而不只是无标签的三个名称。
+
+### Decoding / Inference: Greedy Parsing
+
+推理时从初始 configuration 开始，每一步选择当前得分最高的合法动作：
+
+$$
+\hat a=\arg\max_{a\in\operatorname{LEGAL}(c)}
+\operatorname{Score}_\theta(c,a)
+$$
+
+```text
+c = initial_configuration(sentence)
+while not terminal(c):
+    a = highest_scoring_legal_action(c)
+    c = apply(a, c)
+return dependency_tree(c)
+```
+
+#### Legal Actions 合法动作
+
+模型输出高分，不意味着动作一定可以执行。例如：
+
+* Buffer 为空时不能 Shift。
+* 栈中没有两个可供连接的节点时，不能 Left-Arc / Right-Arc。
+* ROOT 不能作为 dependent 被移除。
+
+因此，`LEGAL(c)` 根据状态约束屏蔽非法动作；模型负责在合法候选中打分选择。
+
+终止条件也由解析系统定义，而不是让模型猜测“是否结束”。在这个解析系统中，buffer 为空且 stack 只剩 ROOT 时结束。
+
+#### Greedy 的含义
+
+每一步只保留当前选择的一条路径，不回头枚举其他动作序列。
+
+* 好处：过程直接，动作数随句长线性增长。
+* 局限：局部最高分不保证整棵树最好，早期错误还会影响后续配置和预测。
+
+补充区分：前面的 $2n$ 是动作数量。如果 encoder 会一次性处理完整句子，它本身的计算开销需要另外考虑，不能只凭动作数就断言整个神经网络计算都是线性的。
+
+### Relation to Cognitive Measures
+
+联系上一节的 locality：句法结构可以为语言理解中的认知负担提供线索。
+
+```text
+1a. The reporter who the senator attacked admitted the error.
+1b. The reporter who attacked the senator admitted the error.
+```
+
+* 1a：宾语关系从句，who 与 attacked 之间隔着 the senator，通常更难处理。
+* 1b：主语关系从句，who 后紧接 attacked，依赖更局部。
+
+从增量加工的角度看，尚未完成的关系需要暂时保留。依赖越不局部，等待期间需要处理的其他内容越多，记忆与整合负担就可能更大。
+
+这也帮助理解 stack / buffer 的计算类比：已经读入不等于已经完成全部结构分析，有些关系需要等后面的词出现后才能确定。
+
+> Q：Transition-based parser 就是人脑实际使用的语言解析算法吗？
+>
+> A：不能直接这样等同。它提供了描述增量处理和未完成依赖的计算模型；真实语言加工是否采用相同的状态、动作和决策机制，还需要行为和神经证据支持。
