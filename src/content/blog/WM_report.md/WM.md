@@ -20,3 +20,27 @@ language: '中文'
 update：进展到世界模型的持续学习：
 
 [WM_Continual_Learning](/WM/WM_Continual_Learning.pdf)
+
+**Problem setup and evaluation**
+
+- **WM-CL compositional benchmark:** studies whether earlier tasks help with later combinations while measuring forgetting. https://arxiv.org/abs/2609.22055
+
+**Route A: learning reusable knowledge from scratch**
+
+- **DRAGO:** combines synthetic rehearsal with exploration of relevant past states to preserve dynamics knowledge for later goals. https://proceedings.mlr.press/v267/fu25f.html
+- **LLWM:** combines task-conditioned latent dynamics, generative replay, and behavior learning for continual visual control. https://arxiv.org/abs/2303.06572
+- **ARROW:** combines short-term and long-term replay buffers to balance current learning with coverage of earlier experience. https://arxiv.org/abs/2603.11395
+- The compositional benchmark also evaluates real replay, EWC, PackNet, and progressive modular learning.
+
+**Route B: reusing and adapting pretrained knowledge**
+
+- **DINO-WM:** reuses frozen DINOv2 spatial features and learns action-conditioned dynamics from trajectories. https://proceedings.mlr.press/v267/zhou25t.html
+- **Newt:** builds a generalist world-model agent through demonstration pretraining and multitask online learning, then studies adaptation to new tasks. https://www.nicklashansen.com/NewtWM/
+- **SPREAD:** freezes a pretrained world model and updates LoRA adapters to adapt to environmental changes. https://doi.org/10.1109/LRA.2026.3688061
+- **JEPA-TTT:** freezes the encoder and reward head while updating the dynamics predictor through self-supervised learning and replay across episodes. https://arxiv.org/abs/2610.00722
+
+**Knowledge access and prediction failures**
+
+- **Pretrained VLAs are Surprisingly Resistant to Forgetting — ICML 2026 Oral:** large pretrained VLAs with small replay can show zero forgetting in some settings, and old skills can recover quickly using old-task data. https://proceedings.mlr.press/v306/liu26bu.html
+- **The World Model Remembers, the Actor Forgets:** finds retained world-model information alongside actor forgetting in a DreamerV3 setting with preserved replay. https://arxiv.org/abs/2607.19749
+- **Hallucination in World Models is Predictable and Preventable:** connects prediction failures to data-coverage gaps and uses diagnostic signals to guide targeted data collection and adaptation. https://arxiv.org/abs/2606.27326
