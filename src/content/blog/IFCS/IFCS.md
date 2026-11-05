@@ -3181,7 +3181,7 @@ $$
 
 图中 GPT 表示 Generative Pre-trained Transformer（生成式预训练 Transformer），OPT 表示 Open Pre-trained Transformer（开放预训练 Transformer），是模型系列名称；ΔLL 是加入 surprisal 后的对数似然提升。
 
-这说明“更强的 LM”与“更好的人类认知模型”之间不存在简单的单调对应。不同模型家族、规模和实验设置下的关系，仍然是研究问题。
+这说明“更强的 LM”与“更好的人类认知模型”之间不存在简单的单调对应。不同模型家族、规模和实验设置下的关系，仍然是研究问题。（用模型概率计算出的 surprisal，不一定等于人脑实际感受到的 surprisal）
 
 #### EEG Evidence: N400
 
