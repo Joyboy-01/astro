@@ -2745,3 +2745,603 @@ return dependency_tree(c)
 > Q：Transition-based parser 就是人脑实际使用的语言解析算法吗？
 >
 > A：不能直接这样等同。它提供了描述增量处理和未完成依赖的计算模型；真实语言加工是否采用相同的状态、动作和决策机制，还需要行为和神经证据支持。
+
+
+## Language Modeling
+
+语言模型可以预测接下来出现什么词，也可以为语言加工提供信息量指标。这里把词预测、阅读中的认知负载，以及对话中的信息分布和话轮转换联系起来。
+
+### Brain and Language Processing
+
+#### Comprehension 语言理解
+
+经典的语言加工框架将声音输入、词表征、句法表征和概念联系起来：
+
+* 声音首先经过听觉系统处理，再与顶颞枕联合区域及语言相关区域交换信息。
+* Wernicke 区参与语言理解，可以联系到 word representation（词表征）的提取。
+* Arcuate fasciculus（弓形束）是连接额颞语言区域的白质纤维通路之一。
+* Broca 区参与句法和言语加工，词表征还需要与相关 concept（概念）建立联系。
+
+![Language Areas and Arcuate Fasciculus 语言脑区与弓形束](lm/language_pathways.png)
+
+图为左半球的侧面示意，左侧朝向额叶，右侧朝向后脑。Broca 区位于额叶下部，Wernicke 区在颞叶后上部，角回位于后方的顶颞交界附近；弓形束在它们之间形成弯曲的白质通路。下方的数字是 Brodmann 分区编号。
+
+这些区域共同参与语言理解。可以用这个框架理解信息的联系，但实际加工包含分布式活动和反馈，不能简单看成几个独立模块的单向传递。
+
+#### Production 言语产生
+
+Picture naming（图片命名）实验要求被试看到图片后说出名称，并用 fMRI（functional Magnetic Resonance Imaging，功能磁共振成像）研究相关脑区，用 EEG（Electroencephalography，脑电记录）研究时间进程。
+
+![Word Production 脑区活动与言语产生时间线](lm/production_timeline.png)
+
+左侧用颜色标出相关脑区，数字表示图片出现后的示意时间；右侧把概念准备、词汇提取、语音编码和发音放在同一条时间线上。可以对照看“在哪里发生”和“什么时候发生”。
+
+大致过程：
+
+$$
+\text{Conceptual Preparation}
+\rightarrow\text{Lemma Retrieval / Selection}
+\rightarrow\text{Phonological Code Retrieval}
+\rightarrow\text{Syllabification}
+\rightarrow\text{Phonetic Encoding}
+\rightarrow\text{Articulation}
+$$
+
+* Conceptual preparation：确定要表达的概念。
+* Lemma retrieval / selection：提取和选择词汇单位及其语法属性。
+* Phonological code retrieval：提取词的语音形式。
+* Syllabification：音节化。
+* Phonetic encoding：准备具体的发音形式。
+* Articulation：执行发音，同时存在 self-monitoring（自我监控）。
+
+示意时间线上，lemma retrieval 约从刺激后 200 ms 开始，语音编码提取约 275 ms，音节化约 355 ms，语音实现编码约 455 ms。这些是图片命名研究中的阶段估计，不是每个词都遵循的固定计时。
+
+### Language Models 语言模型
+
+#### Autoregressive LM & Masked LM
+
+Language Model（LM，语言模型）为词或 token 序列建立概率模型。Large Language Model（LLM，大语言模型）指具有较大规模的语言模型。
+
+* Autoregressive LM（自回归语言模型）：根据前面的内容预测当前位置。
+
+$$
+p(w_i\mid w_{<i})
+$$
+
+* Masked LM（掩码语言模型）：根据周围未被遮住的上下文预测被遮住的位置，可以同时利用左右两侧的信息。
+
+$$
+p(w_i\mid w_{\setminus i})
+$$
+
+其中 $w_{<i}$ 表示前缀，$w_{\setminus i}$ 表示除当前位置之外的上下文；实际 masked LM 的条件中还可能包含其他被遮住的位置。
+
+补充用概率链式法则表示自回归序列概率：
+
+$$
+p(w_1,\ldots,w_N)=\prod_{i=1}^{N}p(w_i\mid w_{<i})
+$$
+
+语言建模的方法包括早期的 n-gram、神经网络和 Transformer 自回归模型，也有 diffusion-based LM（扩散语言模型）。后者通过逐步去噪形成序列，这里只作方法类别的区分。
+
+### N-gram Language Models
+
+#### N-gram
+
+N-gram 是连续的 n 个词组成的片段。例如：
+
+```text
+the Sun rises every morning
+
+Unigram:  the / Sun / rises / every / morning
+Bigram:   the Sun / Sun rises / rises every / every morning
+Trigram:  the Sun rises / Sun rises every / rises every morning
+4-gram:   the Sun rises every / Sun rises every morning
+```
+
+基本思路是统计不同片段在语料中出现的频次，再据此估计下一个词的概率。
+
+#### Markov Assumption 马尔可夫假设
+
+N-gram 模型假设下一个词只依赖前面的 $n-1$ 个词：
+
+$$
+p(w_i\mid w_{<i})\approx p(w_i\mid w_{i-n+1},\ldots,w_{i-1})
+$$
+
+令短上下文为 h，最大似然估计为：
+
+$$
+\hat p(w\mid h)=\frac{\operatorname{Count}(h,w)}{\operatorname{Count}(h)}
+$$
+
+注意：4-gram 使用前面 3 个词作为条件，当前要预测的词算第 4 个。
+
+#### Example
+
+```text
+in this peculiar game, the Sun rises every ______
+```
+
+4-gram 只看 `Sun rises every`，更前面的 `in this peculiar game` 不参与预测。
+
+假设语料中：
+
+* `Sun rises every` 出现 1,000 次。
+* `Sun rises every morning` 出现 600 次。
+* `Sun rises every day` 出现 300 次。
+
+则：
+
+$$
+p(\mathrm{morning}\mid\mathrm{Sun\ rises\ every})=0.6
+$$
+
+$$
+p(\mathrm{day}\mid\mathrm{Sun\ rises\ every})=0.3
+$$
+
+#### Sparsity 稀疏问题
+
+有两类不同的问题：
+
+| 情况 | 结果 | 处理思路 |
+| --- | --- | --- |
+| 上下文出现过，但某个后续词没有出现过 | 分子为 0，预测概率为 0 | Smoothing 平滑 |
+| 上下文本身没有出现过 | 分母为 0，无法直接估计 | Backoff 回退 |
+
+Smoothing 为未出现的组合分配一定概率。补充最简单的 add-δ 形式：
+
+$$
+\hat p_\delta(w\mid h)=
+\frac{\operatorname{Count}(h,w)+\delta}
+{\operatorname{Count}(h)+\delta|V|}
+$$
+
+其中 $|V|$ 是词表大小。分子加平滑量后，分母也要相应调整，才能保持概率之和为 1。
+
+Backoff 则缩短条件上下文，例如从 `Sun rises every` 回退到 `rises every`。它用较短上下文中更多的观测，换取可估计的概率。
+
+#### Storage Problem 存储问题
+
+模型需要保存大量 n-gram 的计数。n 越大、语料越多，需要记录的组合通常越多。
+
+因此增大 n 虽然可以保留更长上下文，也会加重稀疏和存储问题；模型还难以把一个词的统计经验直接迁移给意义相近的词。
+
+### Neural Language Models
+
+#### Fixed-Window Neural LM
+
+用 embedding 表示每个词，把固定窗口中的向量拼接后，经过前馈网络预测下一个词。
+
+![Fixed-Window Neural Language Model](lm/fixed_window.png)
+
+设窗口长度为 k，每个 embedding 的维度为 d：
+
+$$
+e=[e_1;\ldots;e_k]\in\mathbb R^{kd}
+$$
+
+统一使用列向量，可以写成：
+
+$$
+h=g(We+b_1),\qquad
+\hat y=\operatorname{softmax}(Uh+b_2)
+$$
+
+* $W\in\mathbb R^{d'\times kd}$：把拼接输入映射到隐藏层。
+* $U\in\mathbb R^{|V|\times d'}$：映射到整个词表的分数。
+* $\hat y$：下一个词的概率分布。
+
+相对于计数模型，它不必存储所有观察过的 n-grams，还可以通过共享向量和参数，为没见过的组合产生预测。
+
+但“可以预测未见组合”不等于数据不足的问题完全消失。它仍受训练数据、词表和泛化能力限制。
+
+主要局限是窗口固定：窗口外的内容无法直接进入预测；增大窗口还会增加 W 的输入维度和参数量。
+
+#### RNN-based LM
+
+![RNN Unrolled Across Time 循环神经网络沿时间展开](lm/rnn.png)
+
+横向箭头表示隐藏状态向后传递，竖向箭头表示当前词的 embedding 进入网络。不同时间步使用相同的参数；展开的多个节点表示不同时间的计算。
+
+RNN（Recurrent Neural Network，循环神经网络）用 hidden state（隐藏状态）不断汇总已经读到的内容：
+
+$$
+h_t=g(W_hh_{t-1}+W_ee_t+b_h)
+$$
+
+$$
+\hat y_t=\operatorname{softmax}(Uh_t+b_y)
+$$
+
+* $e_t$：当前词的 embedding。
+* $h_{t-1}$：上一步的隐藏状态。
+* $h_t$：整合历史和当前输入后的状态。
+* $\hat y_t$：用于预测下一个词的分布。
+
+同一组参数在不同时间步共享，因此处理更长序列时，不必为每个新位置增加一套参数。
+
+理论上可以接收变长序列，但有限维状态和训练中的长期依赖问题，会限制它保留远距离信息的能力。
+
+#### Transformer-based LM
+
+![Transformer Language Model Block Transformer 语言模型结构](lm/transformer.png)
+
+从下往上看：token embedding 加入位置信息，经过重复的 attention 和前馈模块，再映射为词表上的概率。旁路箭头表示 residual connections（残差连接）。
+
+核心组成包括：
+
+* Self-attention：结合不同位置的信息。
+* Multi-head attention：通过多个注意头形成不同的信息组合。
+* Positional embedding / encoding：提供位置或顺序信息。
+* Transformer blocks：叠加 attention、前馈网络、归一化和残差连接。
+
+自回归模型还需要 causal mask，使位置 i 只能使用当前位置及更早的输入，不能偷看要预测的未来内容。
+
+> Q：模型给下一个词分配概率，与生成文本是什么关系？
+>
+> A：生成时先根据当前前缀得到下一个 token 的分布，选择一个 token，再把它加入前缀继续预测。语言建模提供分布，解码方法决定怎样从分布中选择。
+
+### Information in Language
+
+#### Optional Words and UID
+
+```text
+My boss confirmed that we were absolutely crazy.
+My boss confirmed we were absolutely crazy.
+```
+
+省略 that 后，we 紧接 confirmed，可能在这里形成较高的 surprisal。加入 that 可以提前提示从句结构，把部分信息分散到更早的位置。
+
+但另一个上下文中：
+
+```text
+My boss thinks I am absolutely crazy.
+My boss thinks that I am absolutely crazy.
+```
+
+加入 that 也可能带来一段低信息量区域，使信息分布出现下陷。功能词是否有助于平滑信息，取决于具体上下文，不能机械地认为“加上就更流畅”。这两组表达都可以合乎语法，比较的是信息分布。
+
+Uniform Information Density（UID，均匀信息密度）假说认为，说话者倾向于在语言单位内部较均匀地分配信息，避免局部过高或过低的信息密度。
+
+#### Chinese Classifiers 中文量词
+
+```text
+我买了三张桌子。
+我买了三个桌子。
+```
+
+张是与扁平物体相关的 specific classifier（特殊量词），个是 general classifier（通用量词）。
+
+分析量词选择时，需要先决定模型的 context 是什么：
+
+* 只依据前面的“我买了三”？
+* 还是也考虑说话者已经计划好的名词“桌子”？
+
+这会影响条件概率和信息量的解释。说话者规划一句话时，已经知道的内容可能比听者当时听到的前缀更多。
+
+### Surprisal and Entropy
+
+#### Predictive Distribution
+
+给定上下文 C，把位置 i 将出现的 token 视为随机变量 $X_i$，它在词表上有一整个概率分布。
+
+例如：
+
+```text
+On the wall I see a ______
+```
+
+某次模型估计得到：
+
+$$
+p(\mathrm{picture}\mid C)=0.179290,\qquad
+p(\mathrm{pitcher}\mid C)=6.6\times10^{-5}
+$$
+
+这里 picture 比 pitcher 更容易被预期。这些数值是特定模型和上下文下的示例，并非词本身固有的概率。
+
+#### Surprisal 惊奇度
+
+一个实际结果 x 的信息量定义为：
+
+$$
+s(x\mid C)=-\log p(x\mid C)
+$$
+
+* 概率高：更符合预期，surprisal 小。
+* 概率低：更出乎意料，surprisal 大。
+* 使用 $\log_2$ 时单位为 bit，使用自然对数时单位为 nat。
+
+前面的数值使用自然对数：
+
+$$
+s(\mathrm{picture})\approx1.719,\qquad
+s(\mathrm{pitcher})\approx9.626
+$$
+
+#### Entropy 熵
+
+Entropy 描述结果出现之前，整个预测分布有多不确定：
+
+$$
+H(X\mid C)=-\sum_{x\in V}p(x\mid C)\log p(x\mid C)
+$$
+
+也就是所有可能结果的 surprisal 按概率加权后的期望：
+
+$$
+H(X\mid C)=\mathbb E_{x\sim p(\cdot\mid C)}[s(x\mid C)]
+$$
+
+| 指标 | 描述什么 | 需要哪些概率 |
+| --- | --- | --- |
+| Surprisal | 某个具体结果有多意外 | 该结果的概率 |
+| Entropy | 整个分布有多不确定 | 所有可能结果的概率 |
+
+同一个 context 只有一个预测熵，但不同候选词有不同的 surprisal。熵可能大于高概率词的 surprisal，也可能小于罕见词的 surprisal，不能说熵总是更大。
+
+#### Top-k Approximation
+
+只计算概率最高的 k 个词：
+
+$$
+H'_k=-\sum_{x\in\operatorname{TopK}}p(x\mid C)\log p(x\mid C)
+$$
+
+会漏掉其余词的非负贡献。在保留原概率、不重新归一化的情况下，随着 k 增大，这个部分和会上升，逐渐接近完整熵。
+
+如果先对 top-k 概率重新归一化，计算的就是截断后的另一个分布的熵，含义不同。
+
+大量来自同一分布的实际结果，其平均 surprisal 可以估计期望；单个词的 surprisal 则不能直接等同于熵。
+
+#### Entropy Reduction 熵减少
+
+看见一个词后，后续预测的不确定性可能改变。例如：
+
+```text
+Before: On the wall I see ______
+After:  On the wall I see a ______
+```
+
+采用 top-20 的部分和估计时，两个位置的值分别约为 1.9817 和 2.2172。
+
+将 Entropy Reduction（ER，熵减少量）定义为旧值减新值：
+
+$$
+\mathrm{ER}=H_{\mathrm{before}}-H_{\mathrm{after}}
+=1.9817-2.2172=-0.2355
+$$
+
+负值表示加入 a 以后，下一个位置的预测不确定性反而上升。如果定义成新值减旧值，则应得到 $+0.2355$；公式顺序与符号需要一致。
+
+这里比较的是两个位置的下一词分布，不是同一个结果出现前后的概率。单次观察也不保证后续预测的熵一定下降。
+
+### Cognitive Effort in Reading
+
+#### Eye Movements 眼动
+
+* Fixation 注视：眼睛在某个位置相对稳定地停留。
+* Saccade 扫视：眼睛在注视位置之间快速移动。
+* Gaze duration：一次经过某个词时，相关注视持续时间的总和。
+
+![Fixations and Saccades 阅读时的注视与扫视](lm/eye_movements.png)
+
+圆点表示注视位置，箭头表示位置之间的扫视，数字表示发生顺序。视线可以跳过某些词，也可能向前文回视。
+
+阅读不是视线以恒定速度扫过文字，而是注视与扫视交替进行。停留时间可以提供在线加工难度的线索。
+
+#### Surprisal and Reading Time
+
+Reading Time（RT，阅读时间）是读者加工一个词或片段所花的时间。较低概率的词通常需要更长的阅读时间，这个关系更接近对数形式：
+
+$$
+RT\approx\alpha+\beta[-\log p(w_i\mid C)]+\text{other factors}
+$$
+
+因此相同幅度的概率下降，在不同概率区间产生的信息量变化并不一样。
+
+这里是统计关联。词长、词频、前面词的加工影响等，也会影响 reading time，不能把所有时间差都归因于 surprisal。
+
+#### Predictive Power of LM Surprisal
+
+可以比较两个阅读时间回归模型：
+
+```text
+Baseline:  RT ~ baseline variables
+Extended:  RT ~ baseline variables + surprisal
+```
+
+加入 surprisal 后的 predictive power（预测能力）可以用 Log-Likelihood（LL，对数似然）的提升衡量。Δ 表示差值，因此 ΔLL 就是对数似然之差：
+
+$$
+\Delta LL=LL(M_{\mathrm{surprisal}})-LL(M_{\mathrm{baseline}})
+$$
+
+在相同的评估设置下，$\Delta LL$ 越大，表示 surprisal 在原有变量之外解释了更多阅读时间信息。
+
+> Q：语言模型预测词越准确，就越像人的阅读过程吗？
+>
+> A：不一定。预测文本的能力与解释人类阅读时间的能力是两个指标，需要分别评估。
+
+#### Model Quality vs. Human Alignment
+
+用 Perplexity（PPL，困惑度）表示模型对测试文本的预测表现：
+
+$$
+\mathrm{PPL}=\exp\left[-\frac1N\sum_{i=1}^{N}\ln p(w_i\mid w_{<i})\right]
+$$
+
+在相同数据和 tokenization 下，PPL 越低，通常表示词预测越准确。
+
+一些较早模型的比较发现：PPL 更低的模型，其 surprisal 对阅读时间的预测也更好。但部分 LLM 比较出现相反趋势：语言建模表现继续提升，阅读时间预测却变差。
+
+![Language Model Quality and Reading Time 模型表现与人类阅读的关系](lm/human_alignment.png)
+
+图中 GPT 表示 Generative Pre-trained Transformer（生成式预训练 Transformer），OPT 表示 Open Pre-trained Transformer（开放预训练 Transformer），是模型系列名称；ΔLL 是加入 surprisal 后的对数似然提升。
+
+这说明“更强的 LM”与“更好的人类认知模型”之间不存在简单的单调对应。不同模型家族、规模和实验设置下的关系，仍然是研究问题。
+
+#### EEG Evidence: N400
+
+ERP（Event-Related Potential，事件相关电位）是将脑电记录按词出现等事件对齐、平均后得到的反应。N400 是其中约在词出现后 400 ms 附近的负向成分：N 表示 negative（负向），400 表示大致时间，不是脑区编号。Frank et al.（2015）的分析发现，N400 amplitude 与 word surprisal 存在可靠关联。
+
+![Surprisal and ERP Word surprisal 与 ERP 的统计关系](lm/n400_surprisal.png)
+
+右侧是 N400，左侧是 LAN（Left Anterior Negativity，左前负波），另一种 ERP 成分。图例中的 RNN 是循环神经网络，PSG 是 Phrase-Structure Grammar（短语结构文法），n-gram 是计数式语言模型；full BNC 表示使用完整 BNC 语料的版本。图中展示的是模型信息量与脑电指标的统计关系，不是脑区位置图。
+
+这为词可预测性与语言加工之间的联系提供了神经证据，但不表示 N400 只反映 surprisal，也不直接证明大脑使用了某一个特定 LM。
+
+### UID and Entropy Rate Constancy
+
+#### Local Context & Global Context
+
+局部例句能够展示信息峰值的变化，但要研究语料层面的规律，需要区分两种上下文：
+
+* Local context（局部上下文），L：较近的上下文，例如当前句内的前缀。
+* Global context（全局上下文），G：更大范围的话题、对话历史等信息。
+
+条件互信息给出分解：
+
+$$
+H(X\mid G,L)=H(X\mid L)-I(X;G\mid L)
+$$
+
+$I(X;G\mid L)$ 表示：已经知道局部上下文后，全局上下文还能额外减少多少不确定性。
+
+#### Entropy Rate Constancy
+
+Entropy rate constancy（ERC，熵率恒常性）假说把均匀信息分布的思想扩展到更长的语言过程：在足够完整的上下文下，单位语言的信息量倾向于相对稳定。
+
+但只用局部 context 的 LM，直接估计的通常是局部预测量。常用一句话内的平均 surprisal 作近似：
+
+$$
+\bar s_L=-\frac1N\sum_{i=1}^{N}\log p(w_i\mid L_i)
+$$
+
+它是依赖模型和有限上下文的经验估计，不能直接当作人对完整情境的真实条件熵。
+
+#### Predictions in Dialogue
+
+若完整上下文下的信息率相对稳定，随着对话展开：
+
+1. 共同话题和背景逐渐积累，全局上下文提供的信息 $I(X;G\mid L)$ 增加。
+2. 说话者可以使用对局部上下文而言更难预测的词，同时让听者依靠全局背景理解。
+3. 因而只看局部上下文估计的信息量 $H(X\mid L)$ 可以逐渐升高。
+
+这体现 audience design（面向听者的表达设计）：随着共享信息增加，表达方式可以改变。
+
+当 topic shift（话题转换）发生时，原来积累的背景对新内容帮助减少，局部信息量可能突然下降，然后在新话题内重新上升。
+
+![Topic Boundaries and Information 话题边界附近的信息量变化](lm/topic_boundary.png)
+
+横轴是相对于话题边界的位置，0 对应边界，纵轴是估计的信息量。不同颜色对应不同的话题分段方法，可以观察边界附近的下降。
+
+这里使用两个对话语料来源：
+
+* BNC（British National Corpus，英国国家语料库）：包含英式英语书面语和口语；这里分析的是其中的对话部分。
+* SWBD：Switchboard 的常用缩写，是美式英语电话对话语料库。图中 SWBD 和正文中的 Switchboard 指同一来源。
+
+语料库（corpus）就是收集、整理后的真实语言数据。BNC 和 SWBD 是数据来源，不是模型或算法名称。分别介绍见 [BNC](https://www.natcorp.ox.ac.uk/corpus/) 和 [Switchboard](https://catalog.ldc.upenn.edu/LDC97S62)。
+
+Switchboard 和 BNC 的对话分析中，可以观察到随对话推进的信息量变化，以及话题边界附近的下降。这些模式与上述解释一致，但完整上下文的信息率是否恒定，仍需要结合估计方法来判断。
+
+### Dialogue 对话
+
+#### Information Convergence 信息趋同
+
+在一个 topic episode（话题片段）中，可以分别考察 topic initiator（话题发起者）与 responder（回应者）的信息量轨迹。
+
+随着话题展开，两者的局部信息量可以呈现趋近的模式：回应者逐渐利用共同背景，双方的信息分布更加接近。
+
+![Information Convergence 话题发起者与回应者的信息量轨迹](lm/information_convergence.png)
+
+这张图研究的是：在同一个话题内部，发起者和回应者表达的信息量是否逐渐接近。
+
+| 图中的标记 | 含义 |
+| --- | --- |
+| 横轴 Utterance position within topic episode | 话语在当前话题片段中的位置，从话题开头向后排列；不是词在句子中的位置 |
+| 纵轴 $H(w_i\mid L)$ | 依据局部上下文估计的信息量；这项研究按句子中各词的平均 surprisal 估计，越高表示对模型而言越难预测 |
+| 红色 BNC | 英国国家语料库中的对话数据 |
+| 青色 SWBD | Switchboard 电话对话数据 |
+| 实线 initiator | 当前话题的发起者 |
+| 虚线 responder | 当前话题的回应者 |
+| 阴影带 | 均值估计周围的不确定性范围，不表示额外的一组说话者 |
+
+这里 $H$ 表示熵或其经验信息量估计，$w_i$ 表示词，竖线 $\mid$ 表示“给定”，L 是 Local context（局部上下文）。图上一个点汇总了许多话题片段相应位置的观测，并不是一个人的某次对话。
+
+读图时，在同一种颜色内部比较实线和虚线：
+
+* SWBD 中，发起者大致从 9–10 附近逐渐下降到约 9；回应者从约 6 上升到约 9，两条线明显靠近。
+* BNC 中，发起者整体略降，回应者整体上升，二者的差距也缩小，但没有像 SWBD 那样几乎重合。
+
+Convergence（趋同）指双方的信息量差距缩小，不要求每个位置都单调变化，也不要求两条线最后完全相等。重点是同一语料中两种角色的相对变化，不能仅凭红线更高就断言英式英语比美式英语更复杂。
+
+一种解释是：发起者先带来新内容，回应者起初更多承接，随后双方在共同背景上继续展开讨论。这是对信息分布变化的解释，不是直接测量两人是否意见一致或是否完全理解。[Xu & Reitter（2016）](https://aclanthology.org/P16-1051/)
+
+
+反复的话题转换和话题内部的信息变化，还可能形成时间上的周期结构。将按 utterance（话语）排列的信息量序列转换到 frequency domain（频域），可以提取与较高层对话组织有关的特征。
+
+这种频域分析关注的是信息量随话语位置的变化，不是声音波形本身的声学频率。
+
+#### Turn-Taking 话轮转换
+
+自然对话中的回应很快，话轮之间间隔的分布在约 200 ms 附近有峰值。
+
+但单个词的产生规划就可能需要约 600 ms：
+
+| 阶段 | 示意耗时 |
+| --- | ---: |
+| Conceptualization 概念化 | 200 ms |
+| Lexical retrieval 词汇提取 | 75 ms |
+| Form encoding 形式编码 | 325 ms |
+| 合计 | 600 ms |
+
+如果等对方完全说完后才开始想说什么，单凭这些阶段很难解释如此短的接话间隔。
+
+#### Predictive Comprehension and Early Planning
+
+一种解释是理解和回应准备在时间上重叠：
+
+1. 听对方说话时，预测后续内容以及话轮何时结束。
+2. 在对方结束前，已经开始规划自己的回应。
+3. 利用语义、句法和韵律等线索决定实际开始说话的时机。
+
+![Turn-Taking 理解与回应规划在时间上重叠](lm/turn_taking.png)
+
+这样，约 200 ms 的话轮间隔只是对话表面上相邻发声之间的间隔，不是整个回应从无到有的全部计算时间。
+
+> Q：听和说会交替进行，是否说明语言理解与产生完全分开？
+>
+> A：在实际发声上可以交替，但加工过程可以重叠。听者可能一边理解当前话语，一边预测其结束并准备回应。
+
+### Breathing and Spoken Language
+
+#### Tidal Breathing & Speech Breathing
+
+* Tidal breathing 平静呼吸：休息状态下的自然吸气和呼气。
+* Speech breathing 言语呼吸：吸气通常更深、变化更多，常表现为短时间吸气和较长时间呼气。
+* Diaphragm 膈肌：参与呼吸运动。
+* Vital capacity 肺活量：尽量吸气后，能够呼出的最大气量。
+
+![Speech Breathing 膈肌运动与平静呼吸、言语呼吸的差异](lm/speech_breathing.png)
+
+左侧标出吸气和呼气时胸腔、膈肌的运动，右侧以时间为横轴，对比平静呼吸、最大吸呼气和言语呼吸。言语呼吸中，吸气较短，呼气延长以支持发声。
+
+言语需要控制呼气，为连续发声提供气流，因此呼吸节律会配合表达的组织。
+
+#### Measuring Breathing in Conversation
+
+Inductance plethysmography（电感体积描记法）可以通过胸腹部的呼吸带，记录呼吸运动信号，再与麦克风采集的发声时间对齐。
+
+![Breathing and Dialogue 呼吸带测量与言语时间对齐](lm/breathing.png)
+
+通过这些记录，可以比较吸气、呼气与说话片段、完整话轮之间的关系。
+
+#### Breathing Adapts to Syntax and Planning
+
+* 吸气常出现在 constituent boundaries（成分边界）附近，而不是随机分布在语流里。
+* 接下来准备说的句子越长，预先吸气可能越深。
+
+这说明语言规划不仅影响词语选择和句法组织，也会提前调节身体状态。呼吸可以为“说话者已经计划了多少后续内容”提供另一类行为线索。
